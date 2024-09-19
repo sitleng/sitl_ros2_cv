@@ -1,0 +1,48 @@
+<launch>
+    <node name="ecm_disp" pkg="sitl_dvrk" type="pub_ecm_disp.py" output="screen">
+        <param name="cam_type"        type="str"    value="30"/>
+        <param name="calib_dir"       type="str"    value="L2R"/>
+        <!-- <param name="calib_dir"     type="str"    value="R2L"/> -->
+        <!-- <param name="calib_type"    type="str"    value="matlab"/> -->
+        <param name="calib_type"      type="str"    value="opencv"/>
+        <param name="resolution"      type="str"    value="HD720"/>
+        <param name="calib_path"      type="str"    value="/home/$(env USER)/ecm_si_calib_data"/>
+        <!-- <param name="calib_path"    type="str"    value="/home/$(env USER)/ecm_calib_data"/> -->
+        <param name="frame_id"        type="str"    value="ecm_opencv"/>
+        <param name="bf_size"         type="int"    value="5"/>
+        <param name="depth_scale"     type="int"    value="1000"/>
+        <param name="min_disp"        type="int"    value="0"/>
+        <param name="sgm_ndisp"       type="int"    value="256"/>
+        <param name="P1"              type="int"    value="30"/>
+        <param name="P2"              type="int"    value="210"/>
+        <param name="uniq_ratio"      type="int"    value="5"/>
+        <!-- Applying WLS Filter -->
+        <param name="wls_filter_flag" type="bool"   value="0"/>
+        <param name="wls_lambda"      type="double" value="0.4"/>
+        <param name="wls_sigma"       type="int"    value="8000"/>
+        <!-- Applying Disparity Bilateral Filter -->
+        <param name="dbf_flag"      type="bool"   value="0"/>
+        <param name="dbf_ndisp"     type="int"    value="256"/>
+        <param name="radius"        type="int"    value="0"/>
+        <param name="iters"         type="int"    value="1"/>
+    </node>
+
+    <node name="ecm_pcl" pkg="sitl_dvrk" type="pub_ecm_pcl.py" output="screen">
+        <param name="cam_type"      type="str"    value="30"/>
+        <param name="calib_dir"     type="str"    value="L2R"/>
+        <!-- <param name="calib_dir"     type="str"    value="R2L"/> -->
+        <!-- <param name="calib_type"    type="str"    value="matlab"/> -->
+        <param name="calib_type"    type="str"    value="opencv"/>
+        <param name="resolution"    type="str"    value="HD720"/>
+        <param name="calib_path"    type="str"    value="/home/$(env USER)/ecm_si_calib_data"/>
+        <!-- <param name="calib_path"    type="str"    value="/home/$(env USER)/ecm_calib_data"/> -->
+        <param name="frame_id"      type="str"    value="ecm_opencv"/>
+        <param name="depth_scale"   type="int"    value="1000"/>
+        <param name="depth_trunc"   type="double" value="0.15"/>
+        <param name="pcl_scale"     type="double" value="15"/>
+    </node>
+
+    <?ignore
+    
+    ?>
+</launch>

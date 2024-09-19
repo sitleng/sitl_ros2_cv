@@ -1,0 +1,34 @@
+<launch>
+    <arg name="Joffsets"    default="[60, 60, 5, 100, 60, 90]"/>
+    <arg name="align_ratio" default="[0.7, 0.3]"/>
+
+    <node name="grasp_key_input" pkg="sitl_dvrk" type="grasp_key_input.py" output="screen">
+    </node>
+
+    <node name="grasp_gallbladder" pkg="sitl_dvrk" type="grasp_tissue_v2.py" output="screen">
+        <param name="arm_name"           type="str"       value="PSM2"/>
+        <param name="expected_interval"  type="double"    value="0.01"/>
+        <param name="cnt_msg"            type="str"       value="/seg/gallbladder/cnt_3d"/>
+        <param name="bnd_msg"            type="str"       value="/seg/liver_gallb/bnd_3d"/>
+        <param name="ctrd_msg"           type="str"       value="/seg/gallbladder/ctrd_3d"/>
+        <param name="grasp_msg"          type="str"       value="/seg/gallbladder/grasp_3d"/>
+        <param name="tf_path"            type="str"       value="/home/$(env USER)/aruco_data/base_tfs.yaml"/>
+        <param name="calib_fn"           type="str"       value="/home/$(env USER)/aruco_data/psm2_calib_results_final_new_v2.mat"/>
+        <!-- <param name="pedal_flag"         type="bool"      value="true"/> -->
+        <param name="Tweight"            type="double"    value="2.0"/>
+        <param name="Rweight"            type="double"    value="0.2"/>
+        <param name="align_dist"         type="double"    value="0.01"/>
+        <param name="min_pull_dist"      type="double"    value="0.01"/>
+        <param name="jaw_open_angle"     type="int"       value="80"/>
+        <!-- <param name="dist2afgrasp"       type="double"    value="0.03"/> -->
+        <param name="grasp_offset"       type="double"    value="0.005"/>
+        <param name="window_size"        type="int"       value="15"/>
+        <param name="window_thr"         type="double"    value="3e-4"/>
+        <rosparam param="Joffsets"       subst_value="True"> $(arg Joffsets) </rosparam>
+        <rosparam param="align_ratio"    subst_value="True"> $(arg align_ratio) </rosparam>
+    </node>
+
+    <?ignore
+
+    ?>
+</launch>

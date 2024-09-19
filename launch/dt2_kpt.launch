@@ -1,0 +1,19 @@
+<launch>
+    <node name="pub_dt2_insttip" pkg="sitl_dvrk" type="pub_dt2_insttip_v2.py" output="screen">
+        <param name="calib_dir"       type="str"    value="L2R"/>
+        <param name="frame_id"        type="str"    value="ecm_opencv"/>
+        <param name="tip_child_frame_id"  type="str"    value="dt2_inst_tip"/>
+        <param name="jaw_child_frame_id"  type="str"    value="dt2_inst_jaw"/>
+        <param name="psm1_inst"       type="str"    value="PCH"/>
+        <param name="psm2_inst"       type="str"    value=""/>
+        <param name="tf_path"         type="str"    value="/home/$(env USER)/aruco_data/base_tfs.yaml"/>
+        <param name="model_path"      type="str"    value="/home/$(env USER)/dt2_dataset/kpts/results_t3/model_final.pth"/>
+        <param name="score_thresh"    type="double" value="0.8"/>
+        <param name="window_size"     type="int"    value="10"/>
+        <param name="dist_thr"        type="double" value="0.025"/>
+    </node>
+
+    <?ignore
+    
+    ?>
+</launch>

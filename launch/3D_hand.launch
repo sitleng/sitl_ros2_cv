@@ -1,0 +1,15 @@
+<launch>
+    <!-- Start hand3D_ros.py in the "mp" Conda environment -->
+    <node pkg="sitl_dvrk" type="hand3D_ros.py" name="hand3D_ros" output="screen">
+        <env name="CONDA_DEFAULT_ENV" value="mp"/>
+    </node>
+
+    <!-- Start processing_3Dhand.py in the "mp" Conda environment -->
+    <node pkg="sitl_dvrk" type="processing_3Dhand.py" name="processing_3Dhand" output="screen">
+        <env name="CONDA_DEFAULT_ENV" value="mp"/>
+    </node>
+
+    <!-- Start visualiser_R.py -->
+    <node pkg="sitl_dvrk" type="visualiser_R.py" name="visualiser_R" output="screen"/>
+</launch>
+

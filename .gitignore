@@ -1,0 +1,9 @@
+*/.ipynb_checkpoints/*
+*.pyc
+*.mat
+*.asv
+*.bag
+*.pth
+*.json
+*.json.lock
+*.ipynb

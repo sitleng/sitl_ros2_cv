@@ -1,0 +1,63 @@
+<launch>
+    <!-- width min, width max, height min, height max -->
+    <arg name="bnd_axes_ratio" default="[0.1, 0.9]"/>
+
+    <node name="pub_seg_liver" pkg="sitl_dvrk" type="pub_seg_liver.py" output="screen">
+        <param name="calib_dir"             type="str"     value="L2R"/>
+
+        <!-- <param name="model_type"            type="str"     value="Detectron2"/>
+        <param name="model_weights"         type="str"     value="/home/$(env USER)/dt2_dataset/liver/results_v5_re/model_final.pth"/> -->
+
+        <param name="model_type"            type="str"     value="MaskDINO"/>
+        <param name="config_file"           type="str"     value="/home/$(env USER)/MaskDINO/configs/coco/instance-segmentation/maskdino_R50_bs16_50ep_3s_custom.yaml"/>
+        <param name="model_weights"         type="str"     value="/home/$(env USER)/MaskDINO/output_v1/model_final.pth"/>
+
+        <param name="pred_score_thr"        type="double"  value="0.5"/>
+        <param name="obj_type"              type="str"     value="liver"/>
+        <param name="num_cnt_ratio"         type="double"  value="0.05"/>
+        <param name="num_skel_ratio"        type="double"  value="0.1"/>
+        <param name="num_interp_ratio"      type="double"  value="0.1"/>
+        <param name="cnt_area_thr"          type="int"     value="10000"/>
+        <param name="dist_upp_bnd_2d"       type="int"     value="20"/>
+        <param name="skel_ang_thr"          type="int"     value="30"/>
+        <param name="window_size"           type="int"     value="15"/>
+        <param name="mad_thr"               type="double"  value="3"/>
+        <param name="bnd_angle_thr"         type="int"     value="20"/>
+        <param name="num_interp_ratio"      type="double"  value="0.3"/>
+        <param name="dist_upp_bnd_3d"       type="double"  value="0.1"/>
+        <rosparam param="bnd_axes_ratio"    subst_value="True"> $(arg bnd_axes_ratio) </rosparam>
+    </node>
+
+
+    <?ignore
+    <node name="pub_seg_liver_2d" pkg="sitl_dvrk" type="pub_seg_liver_2d.py" output="screen">
+        <param name="calib_dir"             type="str"     value="L2R"/>
+
+        <param name="model_type"            type="str"     value="Detectron2"/>
+        <param name="model_weights"         type="str"     value="/home/$(env USER)/dt2_dataset/liver/results_v5_re/model_final.pth"/>
+
+        <param name="model_type"            type="str"     value="MaskDINO"/>
+        <param name="config_file"           type="str"     value="/home/$(env USER)/MaskDINO/configs/coco/instance-segmentation/maskdino_R50_bs16_50ep_3s_custom.yaml"/>
+        <param name="model_weights"         type="str"     value="/home/$(env USER)/MaskDINO/output_v1/model_final.pth"/>
+
+        <param name="pred_score_thr"        type="double"  value="0.7"/>
+        <param name="obj_type"              type="str"     value="liver"/>
+        <param name="num_cnt_ratio"         type="double"  value="0.05"/>
+        <param name="num_skel_ratio"        type="double"  value="0.1"/>
+        <param name="num_interp_ratio"      type="double"  value="0.1"/>
+        <param name="cnt_area_thr"          type="int"     value="10000"/>
+        <param name="adj_dist_upp_bnd"      type="int"     value="20"/>
+        <param name="skel_ang_thr"          type="int"     value="30"/>
+    </node>
+
+    <node name="pub_seg_liver_3d"  pkg="sitl_dvrk" type="pub_seg_liver_3d.py" output="screen">
+        <param name="window_size"           type="int"     value="15"/>
+        <param name="mad_thr"               type="double"  value="3"/>
+        <param name="bnd_angle_thr"         type="int"     value="20"/>
+        <param name="num_interp_ratio"      type="double"  value="0.3"/>
+        <param name="adj_dist_upp_bnd"      type="double"  value="0.1"/>
+        <rosparam param="bnd_axes_ratio"    subst_value="True"> $(arg bnd_axes_ratio) </rosparam>
+    </node>
+    ?>
+
+</launch>

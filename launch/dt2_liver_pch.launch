@@ -1,0 +1,29 @@
+<launch>
+    <node name="pub_dt2_liver_bnd" pkg="sitl_dvrk" type="pub_dt2_liver_bnd.py" output="screen">
+        <param name="calib_dir"             type="str"     value="L2R"/>
+        <param name="frame_id"              type="str"     value="ecm_opencv"/>
+        <param name="obj_type"              type="str"     value="liver"/>
+        <param name="seg_model_path"        type="str"     value="/home/$(env USER)/dt2_dataset/liver/results_noicra/model_final.pth"/>
+        <param name="seg_model_score_thr"   type="double"  value="0.1"/>
+        <param name="num_goals"             type="int"     value="8"/>
+        <param name="cnt_area_thr"          type="int"     value="10000"/>
+    </node>
+    <node name="pub_dt2_pch_raw" pkg="sitl_dvrk" type="pub_dt2_pch_raw.py" output="screen">
+        <param name="calib_dir"           type="str"     value="L2R"/>
+        <param name="model_path"          type="str"     value="/home/$(env USER)/dt2_dataset/kpts/results_t3/model_final.pth"/>
+        <param name="model_score_thr"     type="double"  value="0.8"/>
+        <param name="window_size"         type="int"     value="10"/>
+        <param name="kpt_score_thr"       type="double"  value="0.01"/>
+        <param name="dist_thr"            type="double"  value="0.025"/>
+    </node>
+    <node name="pub_dt2_pch_cp" pkg="sitl_dvrk" type="pub_dt2_pch_cp.py" output="screen">
+        <param name="tf_path"             type="str"     value="/home/$(env USER)/aruco_data/base_tfs.yaml"/>
+        <param name="frame_id"            type="str"     value="ecm_opencv"/>
+        <param name="tip_child_frame_id"  type="str"     value="dt2_psm1_tip"/>
+        <param name="jaw_child_frame_id"  type="str"     value="dt2_psm1_jaw"/>
+    </node>
+
+    <?ignore
+    
+    ?>
+</launch>

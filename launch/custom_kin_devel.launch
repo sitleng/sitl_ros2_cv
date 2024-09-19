@@ -1,0 +1,26 @@
+<launch>
+    <!-- SITL dVRK TF Node -->
+    <node name="sitl_dvrk_tf" pkg="sitl_dvrk" type="pub_custom_dvrk_tf.py" output="screen" >
+      <param name="cam_type"      type="string" value="30"/>
+      <param name="psm1_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm1_calib_results_final_new_v2.mat" />
+      <!-- <param name="psm1_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm1_calib_results.mat" /> -->
+      <param name="psm2_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm2_calib_results_final_new_v2.mat" />
+      <!-- <param name="psm2_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm2_calib_results.mat" /> -->
+      <param name="ecm_calib_fn"  type="string" value="/home/$(env USER)/aruco_data/ecm_calib_results_final_new_v2.mat"  />
+      <!-- <param name="ecm_calib_fn"  type="string" value="/home/$(env USER)/aruco_data/ecm_calib_results.mat"  /> -->
+    </node>
+    
+    <!-- SITL dVRK CP Node -->
+    <node name="sitl_dvrk_cp" pkg="sitl_dvrk" type="pub_custom_dvrk_cp_devel.py" output="screen" >
+      <param name="cam_type"      type="string" value="30"/>
+      <param name="psm1_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm1_calib_results_final_new_v2.mat" />
+      <!-- <param name="psm1_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm1_calib_results.mat" /> -->
+      <param name="psm2_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm2_calib_results_final_new_v2.mat" />
+      <!-- <param name="psm2_calib_fn" type="string" value="/home/$(env USER)/aruco_data/psm2_calib_results.mat" /> -->
+      <param name="ecm_calib_fn"  type="string" value="/home/$(env USER)/aruco_data/ecm_calib_results_final_new_v2.mat"  />
+      <!-- <param name="ecm_calib_fn"  type="string" value="/home/$(env USER)/aruco_data/ecm_calib_results.mat"  /> -->
+    </node>
+
+    <!-- SITL dVRK Pedals Node -->
+    <node name="sitl_dvrk_pedals" pkg="sitl_dvrk" type="pub_dvrk_pedals.py" output="screen" />
+</launch>

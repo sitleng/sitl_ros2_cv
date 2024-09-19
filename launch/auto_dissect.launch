@@ -1,0 +1,47 @@
+<launch>
+    <node name="auto_dissection" pkg="sitl_dvrk" type="auto_dissect.py" output="screen">
+        <param name="calib_fn"           type="str"       value="/home/$(env USER)/aruco_data/psm1_calib_results_final_new_v2.mat"/>
+        <param name="arm_name"           type="str"       value="PSM1"/>
+        <param name="pedal_flag"         type="bool"      value="true"/>
+        <param name="expected_interval"  type="double"    value="0.01"/>
+        <param name="TransWeight"        type="double"    value="0.99"/>
+        <param name="RotWeight"          type="double"    value="0.01"/>
+
+        <param name="joint1_min"         type="int"       value="-30"/>
+        <param name="joint2_min"         type="int"       value="-40"/>
+        <param name="joint3_min"         type="double"    value="0.01"/>
+        <param name="joint4_min"         type="int"       value="-130"/>
+        <param name="joint5_min"         type="int"       value="10"/>
+        <param name="joint6_min"         type="int"       value="-60"/>
+
+        <param name="joint1_max"         type="int"       value="30"/>
+        <param name="joint2_max"         type="int"       value="40"/>
+        <param name="joint3_max"         type="double"    value="0.24"/>
+        <param name="joint4_max"         type="int"       value="-110"/>
+        <param name="joint5_max"         type="int"       value="30"/>
+        <param name="joint6_max"         type="int"       value="60"/>
+
+        <!-- <param name="pv_cov"             type="str"       value="[[ 0.00000334,  0.00000025, -0.00000075],
+                                                                  [ 0.00000025,  0.00000113, -0.00000012],
+                                                                  [-0.00000075, -0.00000012,  0.00000098]]"/> -->
+
+        <param name="min_dist"           type="double"    value="0.0005"/>
+        <param name="dist_eps"           type="double"    value="0.0005"/>
+        <param name="rate"               type="double"    value="5"/>
+
+    </node>
+
+    
+
+    <?ignore
+    <node name="auto_dis_rec_endo_vid" pkg="sitl_dvrk" type="auto_dissect_rec_endo_vid.py" output="screen">
+        <param name="save_dir" type="str"    value="/home/$(env USER)/auto_dissect_traj"/>
+        <param name="fourcc"   type="str"    value="avc1"/>
+        <param name="fps"      type="int"    value="60"/>
+    </node>
+
+    <node name="auto_dis_rec_kin" pkg="sitl_dvrk" type="auto_dissect_rec_kin.py" output="screen">
+        <param name="save_dir" type="str"    value="/home/$(env USER)/auto_dissect_traj"/>
+    </node>
+    ?>
+</launch>

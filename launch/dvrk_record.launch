@@ -1,0 +1,21 @@
+<launch>
+
+    <node name="rec_endo_vid" pkg="sitl_dvrk" type="record_endo_video.py" output="screen">
+        <param name="save_dir" type="str"    value="/home/$(env USER)/sitl_dvrk_record"/>
+        <param name="fourcc"   type="str"    value="avc1"/>
+        <param name="fps"      type="int"    value="60"/>
+    </node>
+
+    <!-- <node name="rec_kin" pkg="sitl_dvrk" type="record_kinematics.py" output="screen">
+        <param name="save_dir" type="str"    value="/home/$(env USER)/sitl_dvrk_record"/>
+    </node>
+
+    <node name="rec_p" pkg="sitl_dvrk" type="record_pedals.py" output="screen">
+        <param name="save_dir" type="str"    value="/home/$(env USER)/sitl_dvrk_record"/>
+    </node> -->
+
+    <?ignore
+    
+    ?>
+
+</launch>
