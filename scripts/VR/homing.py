@@ -14,7 +14,7 @@ node_name = "PSM2_homing"
 
 # rospy.init_node("PSM2_hand")
 
-psm2_ik_test = dvrk_devel_utils.DVRK_CTRL("PSM2", 0.001, node_name)
+psm2_ik_test = dvrk_devel_utils.DVRK_CTRL(arm_name, expected_interval, node_name)
 init_jp = psm2_ik_test.get_jp()
 goal_jp = np.zeros_like(init_jp)
 goal_jp[2] = 0.05
