@@ -1,0 +1,21 @@
+<launch>
+
+    <node name="left_info" pkg="sitl_dvrk_ros2py" exec="pub_ecm_left_info"  namespace="/ecm" output="screen">
+    </node>
+
+    <node name="right_info" pkg="sitl_dvrk_ros2py" exec="pub_ecm_right_info"  namespace="/ecm" output="screen">
+    </node>
+
+    <node name="left_raw" pkg="sitl_dvrk_ros2py" exec="pub_ecm_left_raw"  namespace="/ecm" output="screen">
+    </node>
+
+    <node name="right_raw" pkg="sitl_dvrk_ros2py" exec="pub_ecm_right_raw"  namespace="/ecm" output="screen">
+    </node>
+
+    <node name="left_rect" pkg="sitl_dvrk_ros2py" exec="pub_ecm_left_rect"  namespace="/ecm" output="screen">
+    </node>
+
+    <node name="right_rect" pkg="sitl_dvrk_ros2py" exec="pub_ecm_right_rect"  namespace="/ecm" output="screen">
+    </node>
+
+</launch>

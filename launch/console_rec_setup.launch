@@ -1,9 +1,0 @@
-<launch>
-
-    <node name="console_pedals" pkg="sitl_dvrk" type="pub_dvrk_pedals.py" output="screen"/>
-
-    <?ignore
-    
-    ?>
-
-</launch>

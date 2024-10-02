@@ -1,0 +1,8 @@
+<launch>
+    <node name="disp" pkg="sitl_dvrk_ros2py" exec="pub_ecm_disp" namespace="/ecm" output="screen">
+    </node>
+
+    <node name="pcl"  pkg="sitl_dvrk_ros2py" exec="pub_ecm_pcl"  namespace="/ecm" output="screen">
+    </node>
+
+</launch>
