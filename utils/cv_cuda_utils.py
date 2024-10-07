@@ -47,22 +47,24 @@ def load_wls_filter(cam1_sgm, params):
     wls_filter.setSigmaColor(params["wls_sigma"])
     return wls_filter
 
-def apply_bf(img_cuda,kernel_size):
+def apply_bf(img, kernel_size):
     return cv2.cuda.bilateralFilter(
-        img_cuda,
+        cvmat2gpumat(img),
         kernel_size=kernel_size,
         sigma_color=kernel_size*2,
         # sigma_spatial=int(kernel_size/2)
-        sigma_spatial=int(kernel_size**3)
-    )
+        sigma_spatial=int(kernel_size**2)
+    ).download()
 
-def cuda_sgm_dbf(cam1_sgm, cam1_rect_mono_cuda, cam2_rect_mono_cuda, dbf_cuda=None):
+def cuda_sgm_dbf(cam1_sgm, cam1_rect_mono, cam2_rect_mono, dbf_cuda=None):
+    cam1_rect_mono_cuda = cvmat2gpumat(cam1_rect_mono)
+    cam2_rect_mono_cuda = cvmat2gpumat(cam2_rect_mono)
     disp_sgm_cuda = cv2.cuda_GpuMat()
     disp_sgm_cuda = cam1_sgm.compute(cam1_rect_mono_cuda,cam2_rect_mono_cuda,disp_sgm_cuda)
     if dbf_cuda is not None:
         disp_sgm_cuda = dbf_cuda.apply(disp_sgm_cuda, cam1_rect_mono_cuda)
     disp_sgm_cuda = cv2.cuda.normalize(disp_sgm_cuda, alpha=0, beta=65535, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32FC1)
-    return disp_sgm_cuda
+    return disp_sgm_cuda.download()
 
 def cuda_sgm_wls_filter(cam1_sgm, cam2_sgm, cam1_rect_mono_cuda, cam2_rect_mono_cuda, wls_filter=None):
     disp_cam1 = cv2.cuda_GpuMat()

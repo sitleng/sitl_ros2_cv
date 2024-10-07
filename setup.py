@@ -29,6 +29,7 @@ setup(
             'pub_ecm_right_raw  = sitl_dvrk_ros2.pub_ecm_right_raw:main',
             'pub_ecm_right_rect = sitl_dvrk_ros2.pub_ecm_right_rect:main',
             'pub_ecm_disp       = sitl_dvrk_ros2.pub_ecm_disp:main',
+            'pub_ecm_pclimg     = sitl_dvrk_ros2.pub_ecm_pclimg:main',
             'pub_ecm_pcl        = sitl_dvrk_ros2.pub_ecm_pcl:main',
             'image_view         = sitl_dvrk_ros2.image_view:main'
         ],

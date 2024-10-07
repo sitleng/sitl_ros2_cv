@@ -10,15 +10,17 @@ def main(args=None):
     rclpy.init(args=args)
 
     params = {
-        "gpu_flag"  : False,
-        "cam_type"  : 30,
-        "calib_dir" : "L2R",
-        "calib_type": "opencv",
-        "resolution": "HD720",
-        "calib_path": "/home/" + os.getlogin() + "/ecm_si_calib_data",
-        "cam_side"  : "right_rect",
-        "fps"       : 60,
-        "slop"      : 0.05
+        "node_name"  : "ecm_right_rect",
+        "queue_size" : 10,
+        "gpu_flag"   : False,
+        "cam_type"   : 30,
+        "calib_dir"  : "L2R",
+        "calib_type" : "opencv",
+        "resolution" : "HD720",
+        "calib_path" : "/home/" + os.getlogin() + "/ecm_si_calib_data",
+        "cam_side"   : "right",
+        "fps"        : 60,
+        "slop"       : 0.02
     }
 
     app = pub_cam_rect_node.PUB_CAM_RECT(params)

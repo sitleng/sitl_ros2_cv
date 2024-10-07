@@ -9,18 +9,22 @@ from utils import ecm_utils, cv_cuda_utils
 
 class PUB_CAM_RAW(Node):
     def __init__(self, params):
-        super().__init__(params["cam_side"]+"_image")
+        super().__init__(params["node_name"])
         self.params = params
         self.br = CvBridge()
-        self.pub_img_mono     = self.create_publisher(CompressedImage, params["cam_side"]+'/image_mono',  10)
-        self.pub_img_color    = self.create_publisher(CompressedImage, params["cam_side"]+'/image_color', 10)
-        self.res              = ecm_utils.Resolution(params["resolution"])
+        self.pub_img_mono  = self.create_publisher(
+            CompressedImage, 'image_mono',  params["queue_size"]
+        )
+        self.pub_img_color = self.create_publisher(
+            CompressedImage, 'image_color', params["queue_size"]
+        )
+        self.res = ecm_utils.Resolution(params["resolution"])
         self.camera = ecm_utils.init_camera(params, self.res)
         self.sub_cam_info = self.create_subscription(
             CameraInfo,
-            params["cam_side"]+'/camera_info',
+            'camera_info',
             self.callback,
-            10
+            params["queue_size"]
         )
 
     def callback(self, cam_info_msg):

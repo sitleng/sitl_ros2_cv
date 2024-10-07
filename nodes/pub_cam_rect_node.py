@@ -10,17 +10,22 @@ from utils import ecm_utils, cv_cuda_utils
 
 class PUB_CAM_RECT(Node):
     def __init__(self, params):
-        super().__init__(params["cam_side"])
+        super().__init__(params["node_name"])
         self.br = CvBridge()
         self.map_x, self.map_y = ecm_utils.load_rect_maps(params["cam_side"], params)
-        self.pub_img_rect_mono  = self.create_publisher(CompressedImage, params["cam_side"]+'/image_mono',  10)
-        self.pub_img_rect_color = self.create_publisher(CompressedImage, params["cam_side"]+'/image_color', 10)
+        self.pub_img_rect_mono  = self.create_publisher(
+            CompressedImage, 'rect/image_mono', params["queue_size"]
+        )
+        self.pub_img_rect_color = self.create_publisher(
+            CompressedImage, 'rect/image_color', params["queue_size"]
+        )
         self.ts = message_filters.ApproximateTimeSynchronizer(
             [
-                message_filters.Subscriber(self, CameraInfo, params["cam_side"].split("_")[0]+"/camera_info"),
-                message_filters.Subscriber(self, CompressedImage, params["cam_side"].split("_")[0]+"/image_color")
+                # "/ecm/"+params["cam_side"]+
+                message_filters.Subscriber(self, CameraInfo, 'camera_info'),
+                message_filters.Subscriber(self, CompressedImage, 'image_color')
             ],
-            queue_size=10, slop=params["slop"] # queue_size, slop
+            queue_size=params["queue_size"], slop=params["slop"] # queue_size, slop
         )
         if params["gpu_flag"]:
             self.ts.registerCallback(self.cb_w_cuda)

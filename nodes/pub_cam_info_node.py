@@ -7,9 +7,11 @@ from utils import ecm_utils
 
 class PUB_CAM_INFO(Node):
     def __init__(self, params):
-        super().__init__(params["cam_side"]+"_info")
-        self.pub_cam_info = self.create_publisher(CameraInfo, params["cam_side"]+'/camera_info', 10)
-        self.res          = ecm_utils.Resolution(params["resolution"])
+        super().__init__(params["node_name"])
+        self.pub_cam_info = self.create_publisher(
+            CameraInfo, 'camera_info', params["queue_size"]
+        )
+        self.res = ecm_utils.Resolution(params["resolution"])
         self.cam_info_msg = ecm_utils.gen_caminfo(
             ecm_utils.load_raw_caminfo(params["cam_side"], params, self.res),
             self.get_clock().now().to_msg()

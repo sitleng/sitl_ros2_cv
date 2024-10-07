@@ -2,7 +2,6 @@
 
 import rclpy
 
-
 import os
 from nodes import pub_cam_disp_node
 
@@ -10,9 +9,12 @@ def main(args=None):
     rclpy.init(args=args)
 
     params = {
-        "slop"            : 0.05,
+        "node_name"       : "pub_ecm_disp",
+        "queue_size"      : 10,
+        "slop"            : 0.03,
         "cam_type"        : 30,
-        "calib_dir"       : "L2R",
+        "cam1_topic"      : "/ecm/left/rect/image_mono",
+        "cam2_topic"      : "/ecm/right/rect/image_mono",
         "calib_type"      : "opencv",
         "resolution"      : "HD720",
         "calib_path"      : "/home/" + os.getlogin() + "/ecm_si_calib_data",

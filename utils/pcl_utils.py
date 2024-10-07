@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from scipy.spatial.distance import cdist
 from ros2_numpy import point_cloud2
-from utils import misc_utils
+from utils import misc_utils, cv_cuda_utils
 
 BIT_MOVE_16 = 2**16
 BIT_MOVE_8  = 2**8
@@ -27,37 +27,47 @@ def xyzarr_to_nparr(xyzarr):
         nparray[:,:,2] = xyzarr['z']
     return nparray
 
-def disp2pcl2_cuda(ref_img_cv, disp_cuda, Q, frame_id, params, stamp=None):
-    is_color = (len(ref_img_cv.shape) > 2)
-    n_points = ref_img_cv.shape[:2]
+def disp2pclimg(disp, Q, params):
+    pcl_cv2   = cv2.reprojectImageTo3D(disp, Q)
+    pcl_cv2   = pcl_cv2/params["depth_scale"]*params["pcl_scale"]
+    trunc_idx = np.where(pcl_cv2[:,:,2] > params["depth_trunc"])
+    pcl_cv2[:,:,0][trunc_idx] = -1
+    pcl_cv2[:,:,1][trunc_idx] = -1
+    pcl_cv2[:,:,2][trunc_idx] = -1
+    return pcl_cv2
+
+def disp2pclimg_cuda(disp, Q, params):
+    disp_cuda = cv_cuda_utils.cvmat2gpumat(disp)
+    pcl_cv2_cuda = cv2.cuda.reprojectImageTo3D(disp_cuda, Q, dst_cn=3)
+    pcl_cv2      = pcl_cv2_cuda.download()/params["depth_scale"]*params["pcl_scale"]
+    trunc_idx    = np.where(pcl_cv2[:,:,2] > params["depth_trunc"])
+    pcl_cv2[:,:,0][trunc_idx] = None
+    pcl_cv2[:,:,1][trunc_idx] = None
+    pcl_cv2[:,:,2][trunc_idx] = None
+    return pcl_cv2
+
+def gen_pcl(ref_img, pclimg, frame_id, stamp=None):
+    is_color = (len(ref_img.shape) > 2)
+    n_points = ref_img.shape[:2]
     if is_color:
         data = np.zeros(n_points, dtype=[('x', np.float32),
                                          ('y', np.float32),
                                          ('z', np.float32),
-                                         ('rgb', np.uint32)])
+                                         ('r', np.uint8),
+                                         ('g', np.uint8),
+                                         ('b', np.uint8)])
     else:
         data = np.zeros(n_points, dtype=[('x', np.float32),
                                          ('y', np.float32),
                                          ('z', np.float32)])
-        
-    pcl_cv2_cuda = cv2.cuda.reprojectImageTo3D(disp_cuda, Q, dst_cn=3)
-    pcl_cv2      = pcl_cv2_cuda.download()/params["depth_scale"]*params["pcl_scale"]
-    trunc_idx    = np.where(pcl_cv2[:,:,2] > params["depth_trunc"])
-
-    pcl_cv2[:,:,0][trunc_idx] = None
-    pcl_cv2[:,:,1][trunc_idx] = None
-    pcl_cv2[:,:,2][trunc_idx] = None
-
-    data['x'] = pcl_cv2[:,:,0]
-    data['y'] = pcl_cv2[:,:,1]
-    data['z'] = pcl_cv2[:,:,2]
+    data['x'] = pclimg[:,:,0]
+    data['y'] = pclimg[:,:,1]
+    data['z'] = pclimg[:,:,2]
 
     if is_color:
-        color = ref_img_cv[:,:,::-1]
-        rgb_data = color[:,:,0]*BIT_MOVE_16 + color[:,:,1]*BIT_MOVE_8 + color[:,:,2]
-        rgb_data = rgb_data.astype(np.uint32)
-        data['rgb'] = rgb_data
-        
+        data['r'] = ref_img[:,:,0]
+        data['g'] = ref_img[:,:,1]
+        data['b'] = ref_img[:,:,2]
     return point_cloud2.array_to_pointcloud2(data, frame_id=frame_id, stamp=stamp)
 
 def pt_array_3d_to_pcl(pt_array_3d,color=(255,0,0)):
