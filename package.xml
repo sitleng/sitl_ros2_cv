@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>sitl_dvrk_ros2</name>
-  <version>0.0.0</version>
-  <description>ROS2 Package for dVRK in SITL</description>
-  <maintainer email="sktlgt93@gmail.com">sitl-dvrk-sub</maintainer>
+  <name>sitl_ros2_cv</name>
+  <version>1.0.0</version>
+  <description>SITL ROS2 Package for Image Processing and Computer Vision Applications</description>
+  <maintainer email="sktlgt93@gmail.com">koh</maintainer>
   <license>Apache License 2.0</license>
 
   <exec_depend>rclpy</exec_depend>

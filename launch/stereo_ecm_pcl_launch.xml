@@ -1,14 +1,14 @@
 <launch>
-    <!-- <node name="recon3d" pkg="sitl_dvrk_ros2" exec="pub_ecm_recon3d" namespace="/ecm/recon3d" output="screen">
+    <!-- <node name="recon3d" pkg="sitl_ros2_cv" exec="pub_ecm_recon3d" namespace="/ecm/recon3d" output="screen">
     </node> -->
 
-    <node name="disp"    pkg="sitl_dvrk_ros2" exec="pub_ecm_disp"    namespace="/ecm/recon3d" output="screen">
+    <node name="disp"    pkg="sitl_ros2_cv" exec="pub_ecm_disp"    namespace="/ecm/recon3d" output="screen">
     </node>
 
-    <node name="pclimg"  pkg="sitl_dvrk_ros2" exec="pub_ecm_pclimg"  namespace="/ecm/recon3d" output="screen">
+    <node name="pclimg"  pkg="sitl_ros2_cv" exec="pub_ecm_pclimg"  namespace="/ecm/recon3d" output="screen">
     </node>
 
-    <node name="pcl"     pkg="sitl_dvrk_ros2" exec="pub_ecm_pcl"     namespace="/ecm/recon3d" output="screen">
+    <node name="pcl"     pkg="sitl_ros2_cv" exec="pub_ecm_pcl"     namespace="/ecm/recon3d" output="screen">
     </node>
 
 </launch>

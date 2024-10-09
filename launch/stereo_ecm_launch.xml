@@ -1,20 +1,20 @@
 <launch>
-    <node name="info"  pkg="sitl_dvrk_ros2" exec="pub_ecm_left_info"  namespace="/ecm/left" output="screen">
+    <node name="info"  pkg="sitl_ros2_cv" exec="pub_ecm_left_info"  namespace="/ecm/left" output="screen">
     </node>
 
-    <node name="raw"   pkg="sitl_dvrk_ros2" exec="pub_ecm_left_raw"   namespace="/ecm/left" output="screen">
+    <node name="raw"   pkg="sitl_ros2_cv" exec="pub_ecm_left_raw"   namespace="/ecm/left" output="screen">
     </node>
 
-    <node name="rect"  pkg="sitl_dvrk_ros2" exec="pub_ecm_left_rect"  namespace="/ecm/left" output="screen">
+    <node name="rect"  pkg="sitl_ros2_cv" exec="pub_ecm_left_rect"  namespace="/ecm/left" output="screen">
     </node>
 
-    <node name="info" pkg="sitl_dvrk_ros2" exec="pub_ecm_right_info" namespace="/ecm/right" output="screen">
+    <node name="info" pkg="sitl_ros2_cv" exec="pub_ecm_right_info" namespace="/ecm/right" output="screen">
     </node>
 
-    <node name="raw"  pkg="sitl_dvrk_ros2" exec="pub_ecm_right_raw"  namespace="/ecm/right" output="screen">
+    <node name="raw"  pkg="sitl_ros2_cv" exec="pub_ecm_right_raw"  namespace="/ecm/right" output="screen">
     </node>
 
-    <node name="rect" pkg="sitl_dvrk_ros2" exec="pub_ecm_right_rect" namespace="/ecm/right" output="screen">
+    <node name="rect" pkg="sitl_ros2_cv" exec="pub_ecm_right_rect" namespace="/ecm/right" output="screen">
     </node>
 
 </launch>
