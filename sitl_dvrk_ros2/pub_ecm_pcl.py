@@ -13,6 +13,7 @@ def main(args=None):
         "queue_size"    : 10,
         "slop"          : 0.03,
         "ref_cam_topic" : "/ecm/left/rect/image_color",
+        "depth_scale"   : 1000,
     }
 
     app = pub_cam_pcl_node.PUB_CAM_PCL(params)

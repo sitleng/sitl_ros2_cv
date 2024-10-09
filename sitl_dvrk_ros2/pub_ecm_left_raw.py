@@ -3,6 +3,7 @@
 import rclpy
 
 from nodes import pub_cam_raw_node
+from utils import ecm_utils
 
 def main(args=None):
     rclpy.init(args=args)
@@ -10,8 +11,6 @@ def main(args=None):
     params = {
         "node_name"  : "ecm_left_raw",
         "queue_size" : 10,
-        "gpu_flag"   : False,
-        "resolution" : "HD720",
         "cam_id"     : 0,
         "gamma"      : 1.5,
         "fps"        : 60,
@@ -20,6 +19,7 @@ def main(args=None):
         "saturation" : 180,
         "fps"        : 60
     }
+    params.update(ecm_utils.load_base_params())
 
     app = pub_cam_raw_node.PUB_CAM_RAW(params)
 

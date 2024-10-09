@@ -27,47 +27,51 @@ def xyzarr_to_nparr(xyzarr):
         nparray[:,:,2] = xyzarr['z']
     return nparray
 
-def disp2pclimg(disp, Q, params):
-    pcl_cv2   = cv2.reprojectImageTo3D(disp, Q)
-    pcl_cv2   = pcl_cv2/params["depth_scale"]*params["pcl_scale"]
-    trunc_idx = np.where(pcl_cv2[:,:,2] > params["depth_trunc"])
-    pcl_cv2[:,:,0][trunc_idx] = -1
-    pcl_cv2[:,:,1][trunc_idx] = -1
-    pcl_cv2[:,:,2][trunc_idx] = -1
-    return pcl_cv2
+def disp2pclimg(disp, Q, pcl_scale, depth_trunc):
+    pclimg   = cv2.reprojectImageTo3D(disp, Q)*pcl_scale
+    # pclimg   = pclimg/params["depth_scale"]*params["pcl_scale"]
+    trunc_idx = np.linalg.norm(pclimg, axis=2) < depth_trunc
+    pclimg[~trunc_idx, :] = None
+    # pclimg[:,:,0][trunc_idx] = None
+    # pclimg[:,:,1][trunc_idx] = None
+    # pclimg[:,:,2][trunc_idx] = None
+    return pclimg
 
-def disp2pclimg_cuda(disp, Q, params):
+def disp2pclimg_cuda(disp, Q, pcl_scale, depth_trunc):
     disp_cuda = cv_cuda_utils.cvmat2gpumat(disp)
-    pcl_cv2_cuda = cv2.cuda.reprojectImageTo3D(disp_cuda, Q, dst_cn=3)
-    pcl_cv2      = pcl_cv2_cuda.download()/params["depth_scale"]*params["pcl_scale"]
-    trunc_idx    = np.where(pcl_cv2[:,:,2] > params["depth_trunc"])
-    pcl_cv2[:,:,0][trunc_idx] = None
-    pcl_cv2[:,:,1][trunc_idx] = None
-    pcl_cv2[:,:,2][trunc_idx] = None
-    return pcl_cv2
+    pclimg_cuda = cv2.cuda.reprojectImageTo3D(disp_cuda, Q, dst_cn=3)
+    # pclimg      = pclimg_cuda.download()/params["depth_scale"]#*params["pcl_scale"]
+    pclimg    = pclimg_cuda.download()*pcl_scale
+    trunc_idx = np.linalg.norm(pclimg, axis=2) < depth_trunc
+    pclimg[~trunc_idx, :] = None
+    return pclimg
 
-def gen_pcl(ref_img, pclimg, frame_id, stamp=None):
+def gen_pcl(ref_img, pclimg, depth_scale, frame_id, stamp=None):
+    pclimg = pclimg/depth_scale
     is_color = (len(ref_img.shape) > 2)
-    n_points = ref_img.shape[:2]
+    trunc_idx = ~np.isnan(pclimg[:,:,0])
+    n_points = np.sum(trunc_idx)
+    # n_points = ref_img.shape[:2]
     if is_color:
         data = np.zeros(n_points, dtype=[('x', np.float32),
                                          ('y', np.float32),
                                          ('z', np.float32),
-                                         ('r', np.uint8),
-                                         ('g', np.uint8),
-                                         ('b', np.uint8)])
+                                         ('rgb', np.uint32)])
     else:
         data = np.zeros(n_points, dtype=[('x', np.float32),
                                          ('y', np.float32),
                                          ('z', np.float32)])
-    data['x'] = pclimg[:,:,0]
-    data['y'] = pclimg[:,:,1]
-    data['z'] = pclimg[:,:,2]
-
+    # data['x'] = pclimg[:,:,0]
+    # data['y'] = pclimg[:,:,1]
+    # data['z'] = pclimg[:,:,2]
+    data['x'] = pclimg[:,:,0][trunc_idx]
+    data['y'] = pclimg[:,:,1][trunc_idx]
+    data['z'] = pclimg[:,:,2][trunc_idx]
     if is_color:
-        data['r'] = ref_img[:,:,0]
-        data['g'] = ref_img[:,:,1]
-        data['b'] = ref_img[:,:,2]
+        rgb_data = ref_img[:,:,2]*BIT_MOVE_16 + ref_img[:,:,1]*BIT_MOVE_8 + ref_img[:,:,0]
+        rgb_data = rgb_data.astype(np.uint32)
+        # data['rgb'] = rgb_data
+        data['rgb'] = rgb_data[trunc_idx]
     return point_cloud2.array_to_pointcloud2(data, frame_id=frame_id, stamp=stamp)
 
 def pt_array_3d_to_pcl(pt_array_3d,color=(255,0,0)):

@@ -5,9 +5,8 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge
 import message_filters
 
-import numpy as np
 import time
-from utils import cv_cuda_utils, pcl_utils
+from utils import cv_cuda_utils, ros2_utils
 
 class PUB_CAM_DISP(Node):
     def __init__(self, params):
@@ -30,13 +29,14 @@ class PUB_CAM_DISP(Node):
             self.dbf = None
 
         # Publishers
-        self.pub_cam_disp = self.create_publisher(Image, "disparity", params["queue_size"])
+        qos_profile = ros2_utils.custom_qos_profile(params["queue_size"])
+        self.pub_cam_disp = self.create_publisher(Image, "disparity", qos_profile)
 
         # Subscribers
         self.ts = message_filters.ApproximateTimeSynchronizer(
             [
-                message_filters.Subscriber(self, CompressedImage, params["cam1_topic"]),
-                message_filters.Subscriber(self, CompressedImage, params["cam2_topic"])
+                message_filters.Subscriber(self, CompressedImage, params["cam1_topic"], qos_profile=qos_profile),
+                message_filters.Subscriber(self, CompressedImage, params["cam2_topic"], qos_profile=qos_profile)
             ],
             queue_size=params["queue_size"], slop=params["slop"]
         )
@@ -59,9 +59,10 @@ class PUB_CAM_DISP(Node):
                 self.dbf
             )
         disp = cv_cuda_utils.apply_bf(
-            disp, self.params["bf_size"]
+            disp/16, self.params["bf_size"]
         )
-        disp_msg = self.br.cv2_to_imgmsg(disp/16)
+        # disp_msg = self.br.cv2_to_imgmsg(disp/16)
+        disp_msg = self.br.cv2_to_imgmsg(disp)
         self.get_logger().info(f"{disp.dtype}", once=True)
         disp_msg.header.frame_id = cam1_rect_mono_msg.header.frame_id
         disp_msg.header.stamp = self.get_clock().now().to_msg()

@@ -5,18 +5,19 @@ from sensor_msgs.msg import CompressedImage, CameraInfo
 
 import cv2
 from cv_bridge import CvBridge
-from utils import ecm_utils, cv_cuda_utils
+from utils import ecm_utils, cv_cuda_utils, ros2_utils
 
 class PUB_CAM_RAW(Node):
     def __init__(self, params):
         super().__init__(params["node_name"])
         self.params = params
+        qos_profile = ros2_utils.custom_qos_profile(params["queue_size"])
         self.br = CvBridge()
         self.pub_img_mono  = self.create_publisher(
-            CompressedImage, 'image_mono',  params["queue_size"]
+            CompressedImage, 'image_mono', qos_profile
         )
         self.pub_img_color = self.create_publisher(
-            CompressedImage, 'image_color', params["queue_size"]
+            CompressedImage, 'image_color', qos_profile
         )
         self.res = ecm_utils.Resolution(params["resolution"])
         self.camera = ecm_utils.init_camera(params, self.res)
@@ -24,7 +25,7 @@ class PUB_CAM_RAW(Node):
             CameraInfo,
             'camera_info',
             self.callback,
-            params["queue_size"]
+            qos_profile
         )
 
     def callback(self, cam_info_msg):

@@ -3,13 +3,14 @@
 from rclpy.node import Node
 from sensor_msgs.msg import CameraInfo
 
-from utils import ecm_utils
+from utils import ecm_utils, ros2_utils
 
 class PUB_CAM_INFO(Node):
     def __init__(self, params):
         super().__init__(params["node_name"])
+        qos_profile = ros2_utils.custom_qos_profile(params["queue_size"])
         self.pub_cam_info = self.create_publisher(
-            CameraInfo, 'camera_info', params["queue_size"]
+            CameraInfo, 'camera_info', qos_profile
         )
         self.res = ecm_utils.Resolution(params["resolution"])
         self.cam_info_msg = ecm_utils.gen_caminfo(

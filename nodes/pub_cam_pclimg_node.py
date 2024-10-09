@@ -4,7 +4,8 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-from utils import tf_utils, ecm_utils, pcl_utils
+import time
+from utils import tf_utils, ecm_utils, pcl_utils, ros2_utils
 
 class PUB_CAM_PCLIMG(Node):
     def __init__(self, params):
@@ -21,11 +22,12 @@ class PUB_CAM_PCLIMG(Node):
         )
 
         # Publishers
-        self.pub_cam_3d_pclimg = self.create_publisher(Image, "pclimg", params["queue_size"])
+        qos_profile = ros2_utils.custom_qos_profile(params["queue_size"])
+        self.pub_cam_3d_pclimg = self.create_publisher(Image, "pclimg", qos_profile)
 
         # Subscribers
         self.sub_disp = self.create_subscription(
-            Image, "disparity", self.callback, params["queue_size"]
+            Image, "disparity", self.callback, qos_profile
         )
 
     def load_stereo_calib_local(self, params, width, height):
@@ -34,12 +36,13 @@ class PUB_CAM_PCLIMG(Node):
         return Q, B, f, tf_utils.ginv(tf_utils.gen_g(R, T/params["depth_scale"]))
 
     def callback(self, disp_msg):
+        # start_time = time.time()
         disp = self.br.imgmsg_to_cv2(disp_msg)
-        self.get_logger().info(f"{disp.dtype}", once=True)
-        pclimg = pcl_utils.disp2pclimg(disp, self.Q, self.params)
-        # pclimg = pcl_utils.disp2pclimg_cuda(disp, self.Q, self.params)
+        # self.get_logger().info(f"{disp.dtype}", once=True)
+        pclimg = pcl_utils.disp2pclimg(disp, self.Q, self.params["pcl_scale"], self.params["depth_trunc"])
+        # self.get_logger().info(f'{pclimg.dtype}')
+        # pclimg = pcl_utils.disp2pclimg_cuda(disp, self.Q, self.params["pcl_scale"], self.params["depth_trunc"])
         pclimg_msg = self.br.cv2_to_imgmsg(pclimg)
         pclimg_msg.header.frame_id = disp_msg.header.frame_id
         pclimg_msg.header.stamp = self.get_clock().now().to_msg()
-        # self.get_logger().info(f'{cam2_rect_mono_msg.header}')
         self.pub_cam_3d_pclimg.publish(pclimg_msg)

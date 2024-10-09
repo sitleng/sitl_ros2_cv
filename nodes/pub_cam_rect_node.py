@@ -6,24 +6,25 @@ import message_filters
 from sensor_msgs.msg import CompressedImage, CameraInfo
 
 import cv2
-from utils import ecm_utils, cv_cuda_utils
+from utils import ecm_utils, cv_cuda_utils, ros2_utils
 
 class PUB_CAM_RECT(Node):
     def __init__(self, params):
         super().__init__(params["node_name"])
         self.br = CvBridge()
         self.map_x, self.map_y = ecm_utils.load_rect_maps(params["cam_side"], params)
+        qos_profile = ros2_utils.custom_qos_profile(params["queue_size"])
         self.pub_img_rect_mono  = self.create_publisher(
-            CompressedImage, 'rect/image_mono', params["queue_size"]
+            CompressedImage, 'rect/image_mono', qos_profile
         )
         self.pub_img_rect_color = self.create_publisher(
-            CompressedImage, 'rect/image_color', params["queue_size"]
+            CompressedImage, 'rect/image_color', qos_profile
         )
         self.ts = message_filters.ApproximateTimeSynchronizer(
             [
                 # "/ecm/"+params["cam_side"]+
-                message_filters.Subscriber(self, CameraInfo, 'camera_info'),
-                message_filters.Subscriber(self, CompressedImage, 'image_color')
+                message_filters.Subscriber(self, CameraInfo, 'camera_info', qos_profile=qos_profile),
+                message_filters.Subscriber(self, CompressedImage, 'image_color', qos_profile=qos_profile)
             ],
             queue_size=params["queue_size"], slop=params["slop"] # queue_size, slop
         )

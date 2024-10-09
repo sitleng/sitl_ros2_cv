@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import cv2
 import numpy as np
 import pickle
@@ -26,7 +27,24 @@ class Resolution():
             self.width = 1280
             self.height = 720
 
-def init_camera(params,res):
+def load_base_params(
+        gpu_flag=False,
+        cam_type=30,
+        calib_dir="L2R",
+        calib_type="opencv",
+        resolution="HD720",
+        calib_path="/home/" + os.getlogin() + "/ecm_si_calib_data",
+    ):
+    return {
+        "gpu_flag"   : gpu_flag,
+        "cam_type"   : cam_type,
+        "calib_dir"  : calib_dir,
+        "calib_type" : calib_type,
+        "resolution" : resolution,
+        "calib_path" : calib_path,
+    }
+
+def init_camera(params, res):
     camera = cv2.VideoCapture(params["cam_id"], cv2.CAP_V4L2)
     camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M','J','P','G'))
     # camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M','P','4','V'))
@@ -120,7 +138,7 @@ def gen_caminfo(caminfo_dict, t):
     msg.p                = caminfo_dict["P"]
     return msg
 
-def load_stereo_calib(params,width,height):
+def load_stereo_calib(params, width, height):
     calib_fn = "{}/{}/{}x{}/ECM_STEREO_{}x{}_{}_calib_data_{}.pkl".format(
         params["calib_path"],
         params["cam_type"],
