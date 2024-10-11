@@ -2,17 +2,17 @@
 
 import rclpy
 
-from nodes import pub_cam_pclimg_node
+from nodes.camera import pub_cam_pclimg_node
 from utils import ecm_utils
 
 def main(args=None):
     rclpy.init(args=args)
 
     params = {
-        "node_name"   : "pub_ecm_pclimg",
-        "queue_size"  : 10,
+        "node_name"   : "pub_video_pclimg",
+        "queue_size"  : 5,
         "depth_scale" : 1000,
-        "depth_trunc" : 120,
+        "depth_trunc" : 0.2,
         "pcl_scale"   : 16,
     }
     params.update(ecm_utils.load_base_params())

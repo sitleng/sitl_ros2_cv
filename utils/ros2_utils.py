@@ -1,6 +1,5 @@
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 
-
 def custom_qos_profile(queue_size):
     return QoSProfile(
         history                   = HistoryPolicy.KEEP_LAST,
@@ -12,3 +11,9 @@ def custom_qos_profile(queue_size):
         # liveliness                = ,
         # liveliness_lease_duration = 
     )
+
+def now(node):
+    return node.get_clock().now().to_msg()
+
+def loginfo(node, str, once_flag=False):
+    node.get_logger().info(str, once=once_flag)

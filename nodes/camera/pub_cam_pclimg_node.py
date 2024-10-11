@@ -39,7 +39,13 @@ class PUB_CAM_PCLIMG(Node):
         # start_time = time.time()
         disp = self.br.imgmsg_to_cv2(disp_msg)
         # self.get_logger().info(f"{disp.dtype}", once=True)
-        pclimg = pcl_utils.disp2pclimg(disp, self.Q, self.params["pcl_scale"], self.params["depth_trunc"])
+        pclimg = pcl_utils.disp2pclimg(
+            disp,
+            self.Q,
+            self.params["depth_scale"],
+            self.params["pcl_scale"],
+            self.params["depth_trunc"]
+        )
         # self.get_logger().info(f'{pclimg.dtype}')
         # pclimg = pcl_utils.disp2pclimg_cuda(disp, self.Q, self.params["pcl_scale"], self.params["depth_trunc"])
         pclimg_msg = self.br.cv2_to_imgmsg(pclimg)

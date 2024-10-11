@@ -2,7 +2,7 @@
 
 import rclpy
 
-from nodes import pub_cam_disp_node
+from nodes.camera import pub_cam_disp_node
 from utils import ecm_utils
 
 def main(args=None):

@@ -1,0 +1,14 @@
+<launch>
+    <!-- <node name="recon3d" pkg="sitl_ros2_cv" exec="pub_ecm_recon3d" namespace="/ecm/recon3d" output="screen">
+    </node> -->
+
+    <node name="disp"    pkg="sitl_ros2_cv" exec="pub_video_disp"    namespace="/video/recon3d" output="screen">
+    </node>
+
+    <node name="pclimg"  pkg="sitl_ros2_cv" exec="pub_video_pclimg"  namespace="/video/recon3d" output="screen">
+    </node>
+
+    <node name="pcl"     pkg="sitl_ros2_cv" exec="pub_video_pcl"     namespace="/video/recon3d" output="screen">
+    </node>
+
+</launch>

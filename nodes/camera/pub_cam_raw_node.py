@@ -33,12 +33,12 @@ class PUB_CAM_RAW(Node):
         if ret:
             if not self.params["gpu_flag"]:
                 mono        = cv2.cvtColor(color,cv2.COLOR_BGR2GRAY)
-                color_msg   = self.br.cv2_to_compressed_imgmsg(color, dst_format="jpg")
-                mono_msg    = self.br.cv2_to_compressed_imgmsg(mono, dst_format="jpg")
+                color_msg   = self.br.cv2_to_compressed_imgmsg(color)
+                mono_msg    = self.br.cv2_to_compressed_imgmsg(mono)
             else:
                 mono  = cv2.cuda.cvtColor(cv_cuda_utils.cvmat2gpumat(color), cv2.COLOR_BGR2GRAY)
-                color_msg   = self.br.cv2_to_compressed_imgmsg(color, dst_format="jpg")
-                mono_msg    = self.br.cv2_to_compressed_imgmsg(mono.download(), dst_format="jpg")
+                color_msg   = self.br.cv2_to_compressed_imgmsg(color)
+                mono_msg    = self.br.cv2_to_compressed_imgmsg(mono.download())
             color_msg.header.frame_id = mono_msg.header.frame_id = cam_info_msg.header.frame_id
             color_msg.header.stamp = mono_msg.header.stamp = self.get_clock().now().to_msg()
             self.pub_img_color.publish(color_msg)

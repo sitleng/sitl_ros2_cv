@@ -30,14 +30,15 @@ class IMAGE_VIEW(Node):
     def raw_callback(self, img_msg):
         self.img = self.br.imgmsg_to_cv2(img_msg)
         if self.img is not None:
-            self.get_logger().info(f"{self.img[240:243, 720]}")
+            # self.get_logger().info(f"{self.img[240:243, 720]}")
+            # cv2.imwrite("/home/sitl-dvrk-sub/recon3dtest.png", self.img)
             cv2.imshow(self.cv_win_nm, self.img)
             cv2.waitKey(1)
 
     def compressed_callback(self, img_msg):
         self.img = self.br.compressed_imgmsg_to_cv2(img_msg)
         if self.img is not None:
-            cv2.imwrite("/home/sitl-dvrk-sub/recon3dtest.png", self.img)
-            self.get_logger().info(f"{self.img[150:153, 720]}")
+            # self.get_logger().info(f"{self.img[150:153, 720]}")
+            # cv2.imwrite("/home/sitl-dvrk-sub/recon3dtest.png", self.img)
             cv2.imshow(self.cv_win_nm, self.img)
             cv2.waitKey(1)

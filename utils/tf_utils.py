@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 
 import cv2
+import yaml
 import numpy as np
 np.seterr(all="ignore")
 import math
 from geometry_msgs.msg import TransformStamped, Transform, PointStamped, PoseStamped, Pose
+
+def load_tf_data(tf_data_path):
+    with open(tf_data_path, 'r') as file:
+        tf_data = yaml.safe_load(file)
+    return tf_data
 
 def vec2hat(x):
     if len(x.shape) == 2:
@@ -59,13 +65,13 @@ def g2tf(g):
     tvec = g[:3,3]
     return vecs2tf(rvec,tvec)
 
-def vecs2tf(rvec,tvec):
+def vecs2tf(rvec, tvec):
     out = Transform()
-    quat = rvec2quat(rvec)
-    out.rotation.x = quat[0]
-    out.rotation.y = quat[1]
-    out.rotation.z = quat[2]
-    out.rotation.w = quat[3]
+    quat = np.float64(rvec2quat(rvec))
+    out.rotation.x = quat[0][0]
+    out.rotation.y = quat[1][0]
+    out.rotation.z = quat[2][0]
+    out.rotation.w = quat[3][0]
     out.translation.x = tvec[0]
     out.translation.y = tvec[1]
     out.translation.z = tvec[2]
@@ -148,7 +154,7 @@ def gen_g(R,p):
     T[3,3]   = 1
     return T
 
-def cv2vecs2g(rvec,tvec):
+def cv2vecs2g(rvec, tvec):
     # T = np.vstack((np.hstack((w_hat,v)),np.array([0,0,0,0])))
     R = cv2.Rodrigues(rvec)[0]
     p = tvec.reshape(-1,1)
@@ -237,9 +243,10 @@ def psm_g(z1,z2,z3,z4,z5,z6,z7,th1,th2,th3,th4,th5,th6,th7):
     g = g1.dot(g2.dot(g3.dot(g4.dot(g5.dot(g6.dot(g7))))))
     return g
 
-def pt3d2ptstamped(pt,ts,frame_id=""):
+def pt3d2ptstamped(pt, ts, frame_id=""):
     if pt is None:
         return None
+    pt = np.float64(pt)
     msg = PointStamped()
     msg.header.stamp = ts
     msg.header.frame_id = frame_id
@@ -254,3 +261,11 @@ def ptstamped2pt3d(msg):
     pt[1] = msg.point.y
     pt[2] = msg.point.z
     return pt
+
+g_psm1tip_psm1jaw = cv2vecs2g(
+    np.array([0.0,0.0,0.0]), np.array([-0.005, -0.0025, 0.0147])
+)
+
+g_psm2tip_psm2jaw = cv2vecs2g(
+    np.array([0.0,0.0,0.0]), np.array([-0.004, 0.0, 0.019])
+)

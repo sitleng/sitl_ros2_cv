@@ -59,10 +59,9 @@ class PUB_CAM_DISP(Node):
                 self.dbf
             )
         disp = cv_cuda_utils.apply_bf(
-            disp/16, self.params["bf_size"]
+            disp, self.params["bf_size"]
         )
-        # disp_msg = self.br.cv2_to_imgmsg(disp/16)
-        disp_msg = self.br.cv2_to_imgmsg(disp)
+        disp_msg = self.br.cv2_to_imgmsg(disp/16)
         self.get_logger().info(f"{disp.dtype}", once=True)
         disp_msg.header.frame_id = cam1_rect_mono_msg.header.frame_id
         disp_msg.header.stamp = self.get_clock().now().to_msg()

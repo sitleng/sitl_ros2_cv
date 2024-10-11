@@ -140,6 +140,8 @@ def smooth_cnt(cnt, win_r):
 def rm_outlier_mad(points, thresh=3.5):
     if points.ndim == 1:
         points = points.reshape(-1,1)
+    elif points.size == 0 or points.ndim == 0:
+        return points
     median = np.median(points, axis=0)
     diff = np.sqrt(np.sum((points - median)**2, axis=-1))
     med_abs_deviation = np.median(diff)
@@ -169,17 +171,6 @@ def remove_outliers_dbs(points):
     dbscan = DBSCAN(eps=seq_dists(points).mean(), min_samples=2)
     labels = dbscan.fit_predict(points)
     return points[labels > labels.mean()]
-
-# def proj_curve_to_line(curve):
-#     curve_len = curve_length(curve)
-#     endpt_vec = curve[-1] - curve[0]
-#     endpt_vec /= np.linalg.norm(endpt_vec)
-#     mid_pt = (curve[-1] + curve[0]) / 2
-#     return np.linspace(
-#         mid_pt - endpt_vec*curve_len/2,
-#         mid_pt + endpt_vec*curve_len/2,
-#         curve.shape[0]
-#     )
 
 def proj_curve_to_line(r, curve, pt):
     curve_len = curve_length(curve)
@@ -245,17 +236,17 @@ def restore_cropped_masks(orig_img_size, crop_box, cropped_mask):
     orig_mask[crop_box[1]:crop_box[3], crop_box[0]:crop_box[2]] = cropped_mask
     return orig_mask
 
-def win_avg_3d_pt(cur_pt_2d, pcl_array, window_size, mad_thr):
-    r = int(window_size/2)
-    cur_pts_3d = pcl_array[
-        cur_pt_2d[1]-r:cur_pt_2d[1]+r,
-        cur_pt_2d[0]-r:cur_pt_2d[0]+r
-    ].reshape(-1,3)
-    cur_pts_3d = rm_nan(cur_pts_3d)
-    cur_pts_3d = rm_outlier_mad(cur_pts_3d, mad_thr)
-    if cur_pts_3d.ndim == 0 or cur_pts_3d.size == 0:
-        return None
-    elif cur_pts_3d.ndim == 1:
-        return cur_pts_3d
-    else:
-        return np.mean(cur_pts_3d, axis=0)
+# def win_avg_3d_pt(cur_pt_2d, pcl_array, window_size, mad_thr):
+#     r = int(window_size/2)
+#     cur_pts_3d = pcl_array[
+#         cur_pt_2d[1]-r:cur_pt_2d[1]+r,
+#         cur_pt_2d[0]-r:cur_pt_2d[0]+r
+#     ].reshape(-1,3)
+#     cur_pts_3d = rm_nan(cur_pts_3d)
+#     cur_pts_3d = rm_outlier_mad(cur_pts_3d, mad_thr)
+#     if cur_pts_3d.ndim == 0 or cur_pts_3d.size == 0:
+#         return None
+#     elif cur_pts_3d.ndim == 1:
+#         return cur_pts_3d
+#     else:
+#         return np.mean(cur_pts_3d, axis=0)

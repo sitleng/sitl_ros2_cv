@@ -7,6 +7,8 @@
   <maintainer email="sktlgt93@gmail.com">koh</maintainer>
   <license>Apache License 2.0</license>
 
+  <depend>sitl_dvrk_ros2_interfaces</depend>
+
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>

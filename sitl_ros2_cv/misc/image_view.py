@@ -1,8 +1,6 @@
 import rclpy
 
-from nodes import image_view_node
-
-import cv2
+from nodes.misc import image_view_node
 
 def main(args=None):
     rclpy.init(args=args)
@@ -10,7 +8,8 @@ def main(args=None):
     params = {
         # "topic_name": "/ecm/right_rect/image_color",
         # "img_type"  : "compressed",
-        "topic_name": "/ecm/recon3d/pclimg",
+        # "topic_name": "/video/frame",
+        "topic_name": "/dt2/seg/gallb/mask",
         "img_type"  : "compressed",
     }
 

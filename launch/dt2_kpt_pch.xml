@@ -1,0 +1,8 @@
+<launch>
+    <node name="raw"  pkg="sitl_ros2_cv" exec="pub_kpt_raw_pch" namespace="/dt2/kpt/pch" output="screen">
+    </node>
+
+    <node name="cp"   pkg="sitl_ros2_cv" exec="pub_kpt_cp_pch"  namespace="/dt2/kpt/pch" output="screen">
+    </node>
+
+</launch>

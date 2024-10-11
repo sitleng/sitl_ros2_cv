@@ -1,0 +1,14 @@
+<launch>
+    <node name="info"  pkg="sitl_ros2_cv" exec="pub_ecm_left_info"  namespace="/video/left" output="screen">
+    </node>
+
+    <node name="rect"  pkg="sitl_ros2_cv" exec="pub_video_left"  namespace="/video/left" output="screen">
+    </node>
+
+    <node name="info" pkg="sitl_ros2_cv" exec="pub_ecm_right_info" namespace="/video/right" output="screen">
+    </node>
+
+    <node name="rect"  pkg="sitl_ros2_cv" exec="pub_video_right" namespace="/video/right" output="screen">
+    </node>
+
+</launch>
