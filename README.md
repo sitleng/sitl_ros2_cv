@@ -15,6 +15,7 @@ Please cite our paper if you used our code in any form:
   number={},
   pages={1427-1433},
   keywords={Three-dimensional displays;Medical robotics;Automation;Tracking;Endoscopes;Instruments;Surgery;Liver;Gallbladder;Real-time systems},
-  doi={10.1109/BioRob60516.2024.10719948}}
+  doi={10.1109/BioRob60516.2024.10719948}
+}
 
 ```
