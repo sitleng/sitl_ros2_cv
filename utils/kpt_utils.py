@@ -2,8 +2,9 @@ import numpy as np
 
 from detectron2.data.catalog import Metadata
 
+from sitl_ros2_cv.utils import ma_utils
 from sitl_ros2_interfaces.msg import Dt2KptState
-from sitl_ros2_interfaces.utils import ma_utils, tf_utils
+from sitl_ros2_cv.utils import tf_utils
 from utils import pcl_utils
 
 def load_kpt_metadata(inst_nm):

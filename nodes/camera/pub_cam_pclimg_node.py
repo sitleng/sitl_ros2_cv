@@ -5,7 +5,8 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
 import time
-from sitl_ros2_interfaces.utils import ros2_utils, tf_utils
+from sitl_ros2_cv.utils import ros2_utils
+from sitl_ros2_cv.utils import tf_utils
 from utils import ecm_utils, pcl_utils
 
 class PUB_CAM_PCLIMG(Node):

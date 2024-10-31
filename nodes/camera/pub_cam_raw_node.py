@@ -5,7 +5,7 @@ from sensor_msgs.msg import CompressedImage, CameraInfo
 
 import cv2
 from cv_bridge import CvBridge
-from sitl_ros2_interfaces.utils import ros2_utils
+from sitl_ros2_cv.utils import ros2_utils
 from utils import ecm_utils, cv_cuda_utils
 
 class PUB_CAM_RAW(Node):

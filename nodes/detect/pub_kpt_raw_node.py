@@ -8,7 +8,7 @@ import message_filters
 
 # Import custom libraries
 from sitl_ros2_interfaces.msg import Dt2KptState
-from sitl_ros2_interfaces.utils import ros2_utils
+from sitl_ros2_cv.utils import ros2_utils
 from utils import kpt_utils, dt2_utils
 
 class PUB_KPT_RAW(Node):

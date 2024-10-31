@@ -1,13 +1,13 @@
 import os
 from glob import glob
-from setuptools import setup
+from setuptools import find_packages, setup
 
 package_name = 'sitl_ros2_cv'
 
 setup(
     name=package_name,
     version='1.0.0',
-    packages=[package_name, 'utils', 'nodes'],
+    packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
