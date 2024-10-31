@@ -16,7 +16,7 @@ setup(
     ],
     install_requires=[
         'setuptools',
-        'sitl_dvrk_ros2_interfaces'
+        'sitl_ros2_interfaces'
     ],
     zip_safe=True,
     maintainer='koh',

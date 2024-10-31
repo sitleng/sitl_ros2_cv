@@ -7,7 +7,7 @@ from cv_bridge import CvBridge
 import message_filters
 
 # Import custom libraries
-from sitl_dvrk_ros2_interfaces.msg import Dt2KptState
+from sitl_ros2_interfaces.msg import Dt2KptState
 from utils import kpt_utils, dt2_utils, ros2_utils
 
 class PUB_KPT_RAW(Node):

@@ -11,7 +11,7 @@ from geometry_msgs.msg import TransformStamped, PoseStamped
 import message_filters
 
 # Import custom libraries
-from sitl_dvrk_ros2_interfaces.msg import Dt2KptState
+from sitl_ros2_interfaces.msg import Dt2KptState
 from utils import tf_utils, ma_utils, ros2_utils, kpt_utils
 
 class PUB_KPT_CP(Node):
