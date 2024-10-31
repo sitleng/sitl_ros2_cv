@@ -5,8 +5,7 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge
 import message_filters
 
-from sitl_ros2_cv.utils import ros2_utils
-from utils import cv_cuda_utils
+from utils import cv_cuda_utils, ros2_utils
 
 class PUB_CAM_DISP(Node):
     def __init__(self, params):
