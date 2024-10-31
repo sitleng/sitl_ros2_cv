@@ -3,7 +3,8 @@
 from rclpy.node import Node
 from sensor_msgs.msg import CameraInfo
 
-from utils import ecm_utils, ros2_utils
+from sitl_ros2_interfaces.utils import ros2_utils
+from utils import ecm_utils
 
 class PUB_CAM_INFO(Node):
     def __init__(self, params):

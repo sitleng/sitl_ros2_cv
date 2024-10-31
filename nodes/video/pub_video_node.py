@@ -5,7 +5,7 @@ from sensor_msgs.msg import CompressedImage, CameraInfo
 from cv_bridge import CvBridge
 
 import cv2
-from utils import ros2_utils
+from sitl_ros2_interfaces.utils import ros2_utils
 
 class PUB_VIDEO(Node):
     def __init__(self, params):

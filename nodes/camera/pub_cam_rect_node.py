@@ -6,7 +6,8 @@ import message_filters
 from sensor_msgs.msg import CompressedImage, CameraInfo
 
 import cv2
-from utils import ecm_utils, cv_cuda_utils, ros2_utils
+from sitl_ros2_interfaces.utils import ros2_utils
+from utils import ecm_utils, cv_cuda_utils
 
 class PUB_CAM_RECT(Node):
     def __init__(self, params):
