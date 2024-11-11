@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import numpy as np
 from scipy.signal import savgol_filter
 from sklearn.decomposition import PCA
@@ -9,6 +10,10 @@ from sklearn.neighbors import LocalOutlierFactor
 from scipy.interpolate import PchipInterpolator
 from scipy.spatial.distance import cdist
 from scipy.spatial import cKDTree
+
+def check_empty_path(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 def farthest_first_traversal(points, num_selected_points):
     if points is None or num_selected_points > len(points):

@@ -19,3 +19,9 @@ def now(node):
 
 def loginfo(node, str, once_flag=False):
     node.get_logger().info(str, once=once_flag)
+
+def to_sec(msg):
+    seconds = msg.header.stamp.sec
+    nanoseconds = msg.header.stamp.nanosec
+    # Convert to float seconds
+    return seconds + nanoseconds * 1e-9

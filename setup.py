@@ -51,6 +51,9 @@ setup(
             # misc
             'sub_custom_msg     = sitl_ros2_cv.misc.sub_custom_msg:main',
             'image_view         = sitl_ros2_cv.misc.image_view:main',
+            # dvrk record
+            'rec_stereo_ecm     = sitl_ros2_cv.rec.rec_stereo_ecm:main',
+            'rec_dvrk_kin       = sitl_ros2_cv.rec.rec_dvrk_kin:main',
         ],
     },
 )

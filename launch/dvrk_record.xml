@@ -1,0 +1,10 @@
+<launch>
+    <node name="ecm"    pkg="sitl_ros2_cv" exec="rec_stereo_ecm"  namespace="/dvrk_rec"  output="screen">
+    </node>
+
+    <node name="kin"    pkg="sitl_ros2_cv" exec="rec_dvrk_kin"    namespace="/dvrk_rec"  output="screen">
+    </node>
+
+
+
+</launch>

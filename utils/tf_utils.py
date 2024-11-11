@@ -269,3 +269,13 @@ g_psm1tip_psm1jaw = cv2vecs2g(
 g_psm2tip_psm2jaw = cv2vecs2g(
     np.array([0.0,0.0,0.0]), np.array([-0.004, 0.0, 0.019])
 )
+
+g_map_odom = cv2vecs2g(np.array([0,0,1])*math.radians(90),np.array([0,0,1])).dot(
+    cv2vecs2g(np.array([1,0,0])*math.radians(90),np.array([0,0,0]))
+)
+
+def g_ecm_dvrk(cam_type):
+    if cam_type == "30":
+        return cv2vecs2g(np.array([1,0,0])*math.radians(30),np.array([0,0,0]))
+    elif cam_type == "0":
+        return cv2vecs2g(np.array([0.0,0.0,0.0]),np.array([0,0,0]))
