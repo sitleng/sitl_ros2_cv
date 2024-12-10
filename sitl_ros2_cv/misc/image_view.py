@@ -6,11 +6,11 @@ def main(args=None):
     rclpy.init(args=args)
 
     params = {
-        # "topic_name": "/ecm/right_rect/image_color",
-        # "img_type"  : "compressed",
-        # "topic_name": "/video/frame",
-        "topic_name": "/dt2/seg/gallb/mask",
+        "topic_name": "/ecm/right/rect/image_color",
         "img_type"  : "compressed",
+        # "topic_name": "/video/frame",
+        # "topic_name": "/dt2/seg/gallb/mask",
+        # "img_type"  : "compressed",
     }
 
     image_view = image_view_node.IMAGE_VIEW(params)
