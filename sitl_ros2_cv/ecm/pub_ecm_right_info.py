@@ -10,7 +10,7 @@ def main(args=None):
 
     params = {
         "node_name"  : "ecm_right_info",
-        "queue_size" : 5,
+        "queue_size" : 10,
         "cam_side"   : "right",
         "fps"        : 60
     }
