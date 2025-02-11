@@ -1,16 +1,7 @@
 import cv2
 import numpy as np
 
-from detectron2.data.catalog import Metadata
-
 from utils import misc_utils, cv_utils
-
-def load_seg_metadata():
-    seg_metadata = Metadata()
-    seg_metadata.set(thing_classes = ['Meat','Skin','Liver','Gallbladder','FBF','PCH'])
-    seg_metadata.set(evaluator_type = 'coco')
-    seg_metadata.set(thing_colors=[(255, 0, 0), (0, 255, 0), (0, 0, 255), (100, 50, 0), (10, 150, 75), (48, 92, 38)])
-    return seg_metadata
 
 def seg_score(seg_prob):
     return int(seg_prob.split('%')[0])/100
@@ -37,22 +28,57 @@ def get_obj_seg(seg_mask, cnt_area_thr):
         return np.concatenate(polys)
     else:
         return None
+    
+def get_cnt_mask(seg_cnt, img_shape):
+    seg_cnt = np.int32(seg_cnt)
+    mask = np.zeros(img_shape)
+    cv2.drawContours(mask, [seg_cnt], -1, 255, thickness = cv2.FILLED)
+    return mask
+    
+def align_cnt(cnt, clockwise=True):
+    ctrd = cv_utils.cnt_centroid(cnt)
+    # Flip y-coordinates to correct for image coordinate system
+    cnt_angles = np.arctan2(-(cnt[:, 1] - ctrd[1]), cnt[:, 0] - ctrd[0])
+    sorted_indices = np.argsort(cnt_angles)
+    if clockwise:
+        sorted_indices = sorted_indices[::-1]  # Reverse for clockwise order
+    return cnt[sorted_indices]
 
-def gen_gallb_mask(gallb_score, gallb_mask, liver_score, liver_mask, cnt_area_thr, dub):
-    gallb_cnts = get_obj_seg(gallb_mask, cnt_area_thr)
-    liver_cnts = get_obj_seg(liver_mask, cnt_area_thr)
+def gen_gallb_mask(gallb_score, gallb_cnts, liver_score, liver_cnts, img_shape, dub):
     if gallb_cnts is None or liver_cnts is None:
         return None
+    gallb_cnts = misc_utils.interp_2d(gallb_cnts)
+    gallb_cnts = align_cnt(gallb_cnts)
+    liver_cnts = misc_utils.interp_2d(liver_cnts)
+    liver_cnts = align_cnt(liver_cnts)
+
     dist, inds = misc_utils.nn_kdtree(liver_cnts, gallb_cnts, dub=dub)
     adj_liver = liver_cnts[inds[~np.isinf(dist)]]
     adj_gallb = gallb_cnts[~np.isinf(dist)]
-    adj_cnt = np.int32((adj_liver*liver_score + adj_gallb*gallb_score)/(liver_score + gallb_score))
-    if adj_cnt.size == 0:
-        return None
-    adj_ctrd = cv_utils.cnt_centroid(adj_cnt)
-    adj_cnt_angles = np.array([np.arctan2(x[1], x[0]) for x in adj_cnt - adj_ctrd])
-    adj_cnt = adj_cnt[np.argsort(adj_cnt_angles)]
-    adj_cnt = misc_utils.interp_2d(adj_cnt)
-    new_gallb_mask = np.zeros_like(gallb_mask)
-    cv2.drawContours(new_gallb_mask, [adj_cnt], -1, 255, thickness = cv2.FILLED)
-    return new_gallb_mask
+
+    adj_cnt = np.int32(
+        (adj_liver*liver_score + adj_gallb*gallb_score)/(liver_score + gallb_score)
+    )
+
+    new_gallb_cnts = np.copy(gallb_cnts)
+    new_gallb_cnts[~np.isinf(dist)] = adj_cnt
+
+    new_gallb_mask = np.zeros(img_shape)
+    cv2.drawContours(new_gallb_mask, [new_gallb_cnts], -1, 255, thickness = cv2.FILLED)
+    new_gallb_mask = cv2.morphologyEx(
+        new_gallb_mask,
+        cv2.MORPH_OPEN,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(9,9)),
+        iterations=5
+    )
+    return adj_cnt, new_gallb_cnts, new_gallb_mask
+
+def segment_centroids(segments):
+    """Compute centroids of each segment."""
+    return np.array([np.mean(seg, axis=0) for seg in segments])
+
+def right_bottom_segment(segments):
+    """Selects the segment with the centroid closest to the positive x-axis."""
+    centroids = segment_centroids(segments)
+    right_bottom_idx = np.argmax(centroids[:, 0] + centroids[:, 1])  # Select segment with max x-coordinate
+    return segments[right_bottom_idx]

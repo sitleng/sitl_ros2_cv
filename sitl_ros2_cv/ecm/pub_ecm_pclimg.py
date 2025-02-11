@@ -12,7 +12,7 @@ def main(args=None):
         "node_name"   : "pub_ecm_pclimg",
         "queue_size"  : 10,
         "depth_scale" : 1000,
-        "depth_trunc" : 0.10,
+        "depth_trunc" : 0.125,
         "pcl_scale"   : 16,
     }
     params.update(ecm_utils.load_base_params())

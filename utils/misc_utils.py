@@ -91,30 +91,52 @@ def cnt_axes_3d(cnt):
     # pca_comps = np.vstack([pca_comps, comp_z])
     return pca_comps
 
-def seq_dists(points):
-    dists = np.linalg.norm(np.diff(points, axis=0), axis=1)
-    dists = np.insert(dists, 0, 0)
-    return dists
-
 def proj_vec_to_plane(a, u, v):
     n = np.cross(u, v)
     p_n = (np.dot(a, n) / np.dot(n, n)) * n
     return unit_vector(a - p_n)
 
-def interp_2d(orig_points, num_interp_ratio=0.1, is_closed=True):
+def seq_dists(points):
+    dists = np.linalg.norm(np.diff(points, axis=0), axis=1)
+    dists = np.insert(dists, 0, 0)
+    return dists
+
+def find_segments(points, dist_thr):
+    dists = seq_dists(points)
+    split_indices = np.where(dists[1:] > dist_thr)[0] + 1
+    segments = np.split(points, split_indices)
+    return segments
+
+def interp_2d(orig_points, num_interp_ratio=0.1, is_closed=True, dist_threshold=300):
     if is_closed:
-        orig_points = np.append(orig_points, orig_points[0].reshape(1,2), axis=0)
-    dists = seq_dists(orig_points)
-    filt_orig_pts = orig_points[~np.isclose(dists, 0)]
-    n_orig = np.cumsum(dists[~np.isclose(dists, 0)])
-    n_orig = n_orig/n_orig[-1]
-    des_num_points = int(filt_orig_pts.shape[0]*(1 + num_interp_ratio))
-    n_des  = np.linspace(0, 1, num = des_num_points)
-    interpolated_points = np.zeros((des_num_points, 2), dtype=np.int32)
-    for i in range(2):
-        interp_func = PchipInterpolator(n_orig, filt_orig_pts[:,i])
-        interpolated_points[:,i] = interp_func(n_des)
-    return interpolated_points
+        orig_points = np.append(orig_points, orig_points[0].reshape(1, 2), axis=0)    
+    if dist_threshold is not None:
+        segments = find_segments(orig_points, dist_threshold)
+    else:
+        segments = [orig_points]
+    interpolated_segments = []
+    for segment in segments:
+        if segment.shape[0] < 2:  # Skip segments with fewer than 2 points
+            continue
+        seg_dists = seq_dists(segment)
+        try:
+            filt_segment = segment[~np.isclose(seg_dists, 0)]
+            n_orig = np.cumsum(seg_dists[~np.isclose(seg_dists, 0)])
+            n_orig = n_orig / n_orig[-1]
+        except:
+            print(filt_segment)
+        if n_orig.shape[0] < 2:
+            continue
+        des_num_points = int(filt_segment.shape[0] * (1 + num_interp_ratio))
+        n_des = np.linspace(0, 1, num=des_num_points)
+        
+        interpolated_points = np.zeros((des_num_points, 2), dtype=np.int32)
+        for i in range(2):
+            interp_func = PchipInterpolator(n_orig, filt_segment[:, i])
+            interpolated_points[:, i] = interp_func(n_des)
+        interpolated_segments.append(interpolated_points)
+
+    return np.vstack(interpolated_segments)
 
 def interp_3d(orig_points, num_interp_ratio=0.1, is_closed=True):
     if orig_points is None or orig_points.size < 2:

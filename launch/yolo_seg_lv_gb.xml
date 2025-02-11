@@ -1,0 +1,5 @@
+<launch>
+    <node name="seg"  pkg="sitl_ros2_cv" exec="pub_seg_lv_gb_yolo"  namespace="/yolo/seg/gallb" output="screen">
+    </node>
+
+</launch>

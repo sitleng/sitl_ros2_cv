@@ -7,3 +7,6 @@
 *.json
 *.json.lock
 *.ipynb
+*.pt
+*.pth
+*.png

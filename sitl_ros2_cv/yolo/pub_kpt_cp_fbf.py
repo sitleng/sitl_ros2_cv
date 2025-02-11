@@ -15,8 +15,8 @@ def main(args=None):
         "ct_kpt_nm"          : "Center",
         "tf_path"            : "/home/"+os.getlogin()+"/aruco_data/base_tfs.yaml",
         "frame_id"           : "ecm_left",
-        "tip_child_frame_id" : "dt2_psm2_tip",
-        "jaw_child_frame_id" : "dt2_psm2_jaw",
+        "tip_child_frame_id" : "psm2_tip_yolo",
+        "jaw_child_frame_id" : "psm2_jaw_yolo",
         "psm_topic"          : "/PSM2/custom/setpoint_cp",
     }
 

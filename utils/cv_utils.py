@@ -107,7 +107,7 @@ def prune_skeleton(skel_inds, ang_thr=20):
     img_corner = np.array([1280, 720])
     skel_angles = np.array([np.arctan2(x[1], x[0]) for x in res_skel - img_corner])
     res_skel = res_skel[np.argsort(skel_angles)]
-    res_skel = misc_utils.interp_2d(res_skel, 0.01, False)
+    res_skel = misc_utils.interp_2d(res_skel, 0.05, False)
     return res_skel
     
 

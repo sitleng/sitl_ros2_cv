@@ -1,5 +1,5 @@
 <launch>
-    <node name="seg"  pkg="sitl_ros2_cv" exec="pub_seg_lv_gb"  namespace="/dt2/seg/gallb" output="screen">
+    <node name="seg"  pkg="sitl_ros2_cv" exec="pub_seg_lv_gb_dt2"  namespace="/dt2/seg/gallb" output="screen">
     </node>
 
 </launch>

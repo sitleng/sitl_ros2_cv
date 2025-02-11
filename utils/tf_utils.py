@@ -227,7 +227,7 @@ def distance(xdiff,zdiff):
     dist = math.sqrt(xdiff**2 + zdiff**2)
     return dist
 
-def rot_dist(rvec1,rvec2):
+def rot_dist(rvec1, rvec2):
     R1 = cv2.Rodrigues(rvec1)[0]
     R2 = cv2.Rodrigues(rvec2)[0]
     return math.acos((np.trace(R1.dot(R2.T))-1)/2)
@@ -279,3 +279,34 @@ def g_ecm_dvrk(cam_type):
         return cv2vecs2g(np.array([1,0,0])*math.radians(30),np.array([0,0,0]))
     elif cam_type == "0":
         return cv2vecs2g(np.array([0.0,0.0,0.0]),np.array([0,0,0]))
+
+def tf_dist(T1, T2, wT=1, wR=0.1):
+    """
+    Computes the total distance between two homogeneous transformation matrices.
+
+    Args:
+        T1 (np.ndarray): First 4x4 transformation matrix.
+        T2 (np.ndarray): Second 4x4 transformation matrix.
+        wT (float): Translational distance weight.
+        wR (float): Rotational distance weight.
+
+    Returns:
+        float: Total transformation distance (weighted sum of rotation and translation).
+        float: Rotation distance in radians.
+        float: Translation distance in meters.
+    """
+    # Extract rotation matrices and translation vectors
+    R1, t1 = T1[:3, :3], T1[:3, 3]
+    R2, t2 = T2[:3, :3], T2[:3, 3]
+
+    # Compute translation distance (Euclidean norm)
+    trans_dist = np.linalg.norm(t1 - t2)
+
+    # Compute rotation distance using acos(trace formula)
+    rot_dist = np.clip((np.trace(R1.dot(R2.T)) - 1) / 2, -1.0, 1.0)  # Clip for numerical stability
+    rot_dist = math.acos(rot_dist)
+
+    # Combine both distances (you can adjust the weighting factor if needed)
+    total_dist = wT*trans_dist + wR*rot_dist
+
+    return total_dist, trans_dist, rot_dist

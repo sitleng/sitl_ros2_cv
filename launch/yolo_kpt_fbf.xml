@@ -1,0 +1,8 @@
+<launch>
+    <node name="raw"  pkg="sitl_ros2_cv" exec="pub_kpt_raw_fbf_yolo" namespace="/yolo/kpt/fbf" output="screen">
+    </node>
+
+    <node name="cp"   pkg="sitl_ros2_cv" exec="pub_kpt_cp_fbf_yolo"  namespace="/yolo/kpt/fbf" output="screen">
+    </node>
+
+</launch>

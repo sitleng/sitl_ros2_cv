@@ -15,8 +15,55 @@ from utils import misc_utils
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
+from detectron2.data.catalog import Metadata
 
 from detectron2.utils.visualizer import Visualizer, _create_text_labels, GenericMask
+
+def load_seg_metadata():
+    seg_metadata = Metadata()
+    seg_metadata.set(thing_classes = ['Liver','Gallbladder', 'LiverBed'])
+    seg_metadata.set(evaluator_type = 'coco')
+    seg_metadata.set(thing_colors=[(255, 255, 0), (255, 0, 255), (0, 255, 255)])
+    return seg_metadata
+
+def load_kpt_metadata(inst_nm):
+    kpt_metadata = Metadata()
+    kpt_metadata.set(thing_classes = [inst_nm])
+    kpt_metadata.set(evaluator_type = 'coco')
+    kpt_metadata.set(
+        keypoint_flip_map = []
+    )
+    if inst_nm == "PCH":
+        kpt_metadata.set(
+            keypoint_names = [
+                'LeftScrewBottom', 'LeftScrewTop', 'CentralScrew', 'StartHook',
+                'CentralHook', 'TipHook', 'RightScrewTop', 'RightScrewBottom'
+            ]
+        )
+        kpt_metadata.set(
+            keypoint_connection_rules = [
+                ('LeftScrewBottom', 'LeftScrewTop', (0, 255, 0)), ('LeftScrewTop', 'CentralScrew', (0, 255, 0)),
+                ('RightScrewBottom', 'RightScrewTop', (0, 255, 0)), ('RightScrewTop', 'CentralScrew', (0, 255, 0)),
+                ('CentralScrew', 'StartHook', (0, 255, 0)), ('StartHook','CentralHook',(0, 255, 0)), 
+                ('CentralHook','TipHook', (0, 255, 0))
+            ]
+        )
+        kpt_metadata.set(thing_colors=[(238, 130, 238)])
+    elif inst_nm == "FBF":
+        kpt_metadata.set(
+            keypoint_names = ['Head', 'Edge', 'Center', 'TipLeft', 'TipRight']
+        )
+        kpt_metadata.set(
+            keypoint_connection_rules = [
+                ('TipLeft', 'Center', (0, 255, 0)), ('TipRight', 'Center', (0, 255, 0)),
+                ('Center', 'Edge', (0, 255, 0)), ('Edge','Head', (0, 255, 0))
+            ]
+        )
+        kpt_metadata.set(thing_colors=[(0, 165, 255)])
+    else:
+        print("Invalid Instrument (Metadata)...")
+        return None
+    return kpt_metadata
 
 def draw_box(ax, box_coord, color, label, alpha=1, line_style="-"):
     x0, y0, x1, y1 = box_coord
@@ -104,14 +151,12 @@ def draw_and_connect_keypoints_cv(img, metadata, keypoints, bbox, box_c, prob_th
                 cv2.line(out_img, pt1, pt2, (0,255,0), 2)
     return out_img
 
-
-
 def load_seg_predictor(model_path, score_thr):
     cfg = get_cfg()
-    cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+    cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"))
     cfg.DATALOADER.NUM_WORKERS = 1
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 6
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3
     cfg.MODEL.WEIGHTS = model_path
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = score_thr
     return DefaultPredictor(cfg)

@@ -20,8 +20,6 @@ class PUB_KPT_CP(Node):
         self.tf_br = TransformBroadcaster(self)
         self.load_params(params)
         self.g_ecmopencv_ecmdvrk = self.load_tf_data(params["tf_path"])
-        self.offset = None
-        self.count = 0
         qos_profile = ros2_utils.custom_qos_profile(params["queue_size"])
         self.pub_kpt_psm_cp    = self.create_publisher(TransformStamped, "psm_cp"   , qos_profile)
         self.pub_kpt_psmjaw_cp = self.create_publisher(TransformStamped, "psmjaw_cp", qos_profile)
@@ -74,14 +72,12 @@ class PUB_KPT_CP(Node):
         g_psmtip[:3,3] = kpts_3d[kpt_nms.index(self.ct_kpt_nm)]
         self.pub_psm1tip(g_psmtip)
         if self.inst_name == "PCH":
-            g_psmjaw, self.offset, self.count = kpt_utils.pch_g_pcmjaw(
+            g_psmjaw = kpt_utils.pch_g_pcmjaw(
                 kpt_nms,
                 kpts_3d,
                 g_psmtip,
                 g_psmjaw,
-                tf_utils.g_psm1tip_psm1jaw,
-                self.offset,
-                self.count
+                tf_utils.g_psm1tip_psm1jaw
             )
         elif self.inst_name == "FBF":
             g_psmjaw = g_psmtip.dot(tf_utils.g_psm2tip_psm2jaw)

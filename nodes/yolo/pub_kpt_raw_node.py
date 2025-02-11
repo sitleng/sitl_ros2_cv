@@ -8,17 +8,15 @@ import message_filters
 
 # Import custom libraries
 from sitl_ros2_interfaces.msg import Dt2KptState
-from utils import kpt_utils, dt2_utils, ros2_utils
+from utils import yolo_utils, ros2_utils, kpt_utils
 
-class PUB_KPT_RAW(Node):
+class PUB_KPT_RAW_YOLO(Node):
     def __init__(self, params):
         super().__init__(params["node_name"])
         self.br = CvBridge()
         self.load_params(params)
-        self.keypt_predictor = dt2_utils.load_kpt_predictor(
-            params['model_path'], params['model_score_thr'], self.inst_name
-        )
-        self.keypt_metadata = dt2_utils.load_kpt_metadata(self.inst_name)
+        self.keypt_model = yolo_utils.load_model(params['model_path'])
+        self.keypt_metadata = yolo_utils.load_kpt_metadata(self.inst_name)
 
         qos_profile = ros2_utils.custom_qos_profile(params["queue_size"])
         self.pub_pch  = self.create_publisher(Dt2KptState, "raw", qos_profile)
@@ -34,19 +32,17 @@ class PUB_KPT_RAW(Node):
     def load_params(self, params):
         self.inst_name = params["inst_name"]
         self.ct_kpt_nm = params["ct_kpt_nm"]
-        self.kpt_score_thr = params["kpt_score_thr"]
         self.mad_thr = params["mad_thr"]
         self.window_size = params["window_size"]
 
     def callback(self, img_msg, pclimg_msg):
         img = self.br.compressed_imgmsg_to_cv2(img_msg)
         pclimg = self.br.imgmsg_to_cv2(pclimg_msg)
-        kpt_nms, kpts_2d = dt2_utils.get_inst_kpts_2d(
-            self.inst_name, img, self.keypt_predictor, self.keypt_metadata, self.kpt_score_thr
-        )
+        kpts_2d = yolo_utils.get_kpts_2d(img, self.keypt_model)
         if kpts_2d is None or kpts_2d.size == 0:
             ros2_utils.loginfo(self, f"{self.inst_name} not detected!")
             return
+        kpt_nms = self.keypt_metadata['kpt_nms']
         kpt_nms, kpts_3d = kpt_utils.win_avg_3d_kpts(
             kpts_2d, kpt_nms, pclimg, self.window_size, self.mad_thr
         )
