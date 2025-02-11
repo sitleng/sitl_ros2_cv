@@ -10,7 +10,7 @@ def main(args=None):
 
     params = {
         "node_name"       : "pub_ecm_disp",
-        "queue_size"      : 10,
+        "queue_size"      : 5,
         "slop"            : 0.01,
         "cam1_topic"      : "/ecm/left/rect/image_mono",
         "cam2_topic"      : "/ecm/right/rect/image_mono",

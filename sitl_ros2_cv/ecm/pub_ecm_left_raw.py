@@ -10,7 +10,7 @@ def main(args=None):
 
     params = {
         "node_name"  : "ecm_left_raw",
-        "queue_size" : 10,
+        "queue_size" : 5,
         "cam_id"     : 0,
         "gamma"      : 1.5,
         "fps"        : 60,

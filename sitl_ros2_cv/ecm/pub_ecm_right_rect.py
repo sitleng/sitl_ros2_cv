@@ -10,10 +10,10 @@ def main(args=None):
 
     params = {
         "node_name"  : "ecm_right_rect",
-        "queue_size" : 10,
+        "queue_size" : 5,
         "cam_side"   : "right",
         "fps"        : 60,
-        "slop"       : 0.02
+        "slop"       : 0.01
     }
     params.update(ecm_utils.load_base_params())
 
