@@ -262,8 +262,12 @@ def ptstamped2pt3d(msg):
     pt[2] = msg.point.z
     return pt
 
+# g_psm1tip_psm1jaw = cv2vecs2g(
+#     np.array([0.0,0.0,0.0]), np.array([-0.005, -0.0025, 0.0147])
+# )
+
 g_psm1tip_psm1jaw = cv2vecs2g(
-    np.array([0.0,0.0,0.0]), np.array([-0.005, -0.0025, 0.0147])
+    np.array([0.0,0.0,0.0]), np.array([-0.002, -0.0025, 0.0147])
 )
 
 g_psm2tip_psm2jaw = cv2vecs2g(

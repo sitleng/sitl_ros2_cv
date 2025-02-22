@@ -1,5 +1,11 @@
 <launch>
-    <node name="seg"  pkg="sitl_ros2_cv" exec="pub_seg_lv_gb_yolo"  namespace="/yolo/seg/gallb" output="screen">
+    <node name="seg_2d"   pkg="sitl_ros2_cv" exec="pub_seg_lv_gb_yolo" namespace="/seg" output="screen">
+    </node>
+
+    <node name="seg_3d"   pkg="sitl_ros2_cv" exec="pub_seg_lv_gb_3d"   namespace="/seg" output="screen">
+    </node>
+
+    <node name="seg_post" pkg="sitl_ros2_cv" exec="pub_seg_lv_gb_post" namespace="/seg" output="screen">
     </node>
 
 </launch>

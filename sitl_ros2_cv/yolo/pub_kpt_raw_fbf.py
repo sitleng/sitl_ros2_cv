@@ -2,7 +2,7 @@ import rclpy
 
 import os
 
-from nodes.yolo import pub_kpt_raw_node
+from nodes.yolo import pub_kpt_raw
 
 def main(args=None):
     rclpy.init(args=args)
@@ -18,11 +18,11 @@ def main(args=None):
         "inst_name"       : "FBF",
         "ct_kpt_nm"       : "Center",
         "model_path"      : "/home/"+os.getlogin()+"/yolo/model_fbf/best.pt",
-        "window_size"     : 20,
-        "mad_thr"         : 2,
+        "window_size"     : 25,
+        "mad_thr"         : 1.5,
     }
 
-    app = pub_kpt_raw_node.PUB_KPT_RAW_YOLO(params)
+    app = pub_kpt_raw.PUB_KPT_RAW(params)
     rclpy.spin(app)
     app.destroy_node()
     rclpy.shutdown()

@@ -10,10 +10,10 @@ def main(args=None):
 
     params = {
         "node_name"   : "pub_ecm_pclimg",
-        "queue_size"  : 10,
+        "queue_size"  : 5,
         "depth_scale" : 1000,
-        "depth_trunc" : 0.125,
-        "pcl_scale"   : 16,
+        "depth_trunc" : 0.15,
+        "pcl_scale"   : 15,
     }
     params.update(ecm_utils.load_base_params())
 

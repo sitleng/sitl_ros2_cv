@@ -4,7 +4,7 @@ import cv2
 import copy
 import numpy as np
 from sklearn.cluster import DBSCAN
-from skimage.morphology import medial_axis, convex_hull_image
+from skimage.morphology import medial_axis, convex_hull_image, skeletonize
 from scipy.ndimage import binary_fill_holes
 
 from utils import misc_utils
@@ -60,19 +60,29 @@ def skeleton_corners_good(skel, max_corners=10, qual_level=0.3, min_dist=25):
         skel, max_corners, qual_level, min_dist
     ).reshape(-1,2).astype(np.int32)
 
-def mask_skeleton(mask, max_dist_ratio):
-    skel, distance = medial_axis(mask, return_distance=True)
-    img_cols, img_rows = np.where(distance == distance.max())
-    ctrd = np.uint16([img_rows.mean(), img_cols.mean()])
+# def mask_skeleton(mask, max_dist_ratio):
+#     skel, distance = medial_axis(mask, return_distance=True)
+#     img_cols, img_rows = np.where(distance == distance.max())
+#     ctrd = np.uint16([img_rows.mean(), img_cols.mean()])
+#     skel_inds = np.stack(np.where(skel.T > 0), axis=1)
+#     skel_dist = distance[skel_inds[:,1], skel_inds[:,0]]
+#     skel_inds = skel_inds[skel_dist > max_dist_ratio*skel_dist.max()]
+#     new_skel = np.zeros_like(skel, dtype=np.uint8)
+#     new_skel[skel_inds[:,1], skel_inds[:,0]] = 255
+#     corners = skeleton_corners_harris(new_skel, blockSize=25, ksize=3)
+#     new_skel[corners[:,1], corners[:,0]] = 0
+#     skel_inds = np.stack(np.where(new_skel.T > 0), axis=1)
+#     return skel_inds, ctrd
+
+def mask_skeleton(mask):
+    skel = skeletonize(mask, method='lee')
     skel_inds = np.stack(np.where(skel.T > 0), axis=1)
-    skel_dist = distance[skel_inds[:,1], skel_inds[:,0]]
-    skel_inds = skel_inds[skel_dist > max_dist_ratio*skel_dist.max()]
-    new_skel = np.zeros_like(skel, dtype=np.uint8)
-    new_skel[skel_inds[:,1], skel_inds[:,0]] = 255
-    corners = skeleton_corners_harris(new_skel, blockSize=25, ksize=3)
-    new_skel[corners[:,1], corners[:,0]] = 0
-    skel_inds = np.stack(np.where(new_skel.T > 0), axis=1)
-    return skel_inds, ctrd
+    # new_skel = np.zeros_like(skel, dtype=np.uint8)
+    # new_skel[skel_inds[:,1], skel_inds[:,0]] = 255
+    # corners = skeleton_corners_harris(new_skel, blockSize=25, ksize=3)
+    # new_skel[corners[:,1], corners[:,0]] = 0
+    # skel_inds = np.stack(np.where(new_skel.T > 0), axis=1)
+    return skel_inds
 
 def branch_len(branch):
     return cv2.arcLength(branch, False)
@@ -107,13 +117,19 @@ def prune_skeleton(skel_inds, ang_thr=20):
     img_corner = np.array([1280, 720])
     skel_angles = np.array([np.arctan2(x[1], x[0]) for x in res_skel - img_corner])
     res_skel = res_skel[np.argsort(skel_angles)]
-    res_skel = misc_utils.interp_2d(res_skel, 0.05, False)
+    try:
+        res_skel = misc_utils.interp_2d(res_skel, 0.05, False)
+    except:
+        print(res_skel)
     return res_skel
     
 
 # Just use skimage.morhpology.convex_hull_mask instead
 def mask_convex_hull(mask):
     return np.uint8(convex_hull_image(mask)*255)
+
+def cnt_convex_hull(cnt):
+    return cv2.convexHull(cnt)
 
 def erode_mask(mask, kernel_type=cv2.MORPH_RECT, kernel_size=5, iter=1):
     kernel = cv2.getStructuringElement(kernel_type, (kernel_size, kernel_size))

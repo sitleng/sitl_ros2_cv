@@ -28,6 +28,9 @@ def xyzarr_to_nparr(xyzarr):
         nparray[:,:,2] = xyzarr['z']
     return nparray
 
+def pcl2nparray(pcl_msg):
+    return point_cloud2.pointcloud2_to_xyz_array(pcl_msg).reshape(-1,3)
+
 def disp2pclimg(disp, Q, depth_scale, pcl_scale, depth_trunc):
     pclimg   = cv2.reprojectImageTo3D(disp, Q)*pcl_scale/depth_scale
     # pclimg   = pclimg/params["depth_scale"]*params["pcl_scale"]
@@ -71,25 +74,6 @@ def pclimg2pcl2(ref_img, pclimg, frame_id, stamp=None):
         # data['rgb'] = rgb_data
         data['rgb'] = rgb_data[trunc_idx]
     return point_cloud2.array_to_pointcloud2(data, frame_id=frame_id, stamp=stamp)
-
-# def pt3d_to_pcl2(pt3d, frame_id, stamp=None, color=(255,0,0)):
-#     data = np.zeros(
-#         pt3d.shape[0],
-#         dtype=[
-#             ('x', np.float32),
-#             ('y', np.float32),
-#             ('z', np.float32),
-#             ('rgb', np.uint32)
-#         ]
-#     )
-#     data['x'] = pt3d[0]
-#     data['y'] = pt3d[1]
-#     data['z'] = pt3d[2]
-#     color = np.repeat(np.array([np.asarray(color)]), pt3d.shape[0], axis=0)
-#     rgb_data = color[:,0]*BIT_MOVE_16 + color[:,1]*BIT_MOVE_8 + color[:,2]
-#     rgb_data = rgb_data.astype(np.uint32)
-#     data['rgb'] = rgb_data
-#     return data
 
 def pts3d_to_pcl2(pts3d, frame_id, stamp=None, color=(255,0,0)):
     data = np.zeros(

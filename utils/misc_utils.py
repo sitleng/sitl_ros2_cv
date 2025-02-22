@@ -3,8 +3,9 @@
 import os
 import numpy as np
 from scipy.signal import savgol_filter
+from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN, HDBSCAN
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 from scipy.interpolate import PchipInterpolator
@@ -15,15 +16,18 @@ def check_empty_path(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def farthest_first_traversal(points, num_selected_points):
-    if points is None or num_selected_points > len(points):
+def farthest_first_traversal(points, min_distance):
+    if points is None or len(points) == 0:
         return None
 
     selected_indices = [0]
     distances = np.linalg.norm(points - points[selected_indices[0]], axis=1)
 
-    for _ in range(1, num_selected_points):
+    while True:
         new_point_index = np.argmax(distances)
+        if distances[new_point_index] < min_distance:
+            break  # Stop if the farthest point is too close to existing points
+        
         selected_indices.append(new_point_index)
         new_distances = np.linalg.norm(points - points[new_point_index], axis=1)
         distances = np.minimum(distances, new_distances)
@@ -66,6 +70,16 @@ def law_of_cos_ang(x1, x2, y):
 def curve_length(curve):
     return np.sum(np.linalg.norm(curve[1:] - curve[:-1], axis=1))
 
+def midpt_curve(curve):
+    # Compute cumulative distances along the curve
+    distances = np.cumsum(np.linalg.norm(np.diff(curve, axis=0), axis=1))
+    total_length = distances[-1]
+    # Find the point closest to half the total length
+    mid_length = total_length / 2
+    mid_index = np.searchsorted(distances, mid_length)
+    middle_point = curve[mid_index+1]
+    return middle_point
+
 # Select contour points based on the contour centroid, major axis, and the threshold angle
 def cnt_pts_angle_vector(pca_comps, cnts, vec, thr_angle):
     ct = cnts.mean(axis=0)
@@ -77,19 +91,16 @@ def cnt_pts_angle_vector(pca_comps, cnts, vec, thr_angle):
 def cnt_axes_3d(cnt):
     pca = PCA(n_components=3)
     pca.fit(cnt)
-    # axes = [np.array([1, 0, 0]), np.array([0, 1, 0])]
-    # dots = [np.abs(np.dot(pca.components_, ax)) for ax in axes]
-    # inds = [np.argmax(dot) for dot in dots]
-    # pca_comps = pca.components_[inds]
-    pca_comps = pca.components_
+    return pca.components_
+
+def align_pca_comps(pca_comps):
+    new_pca_comps = np.zeros_like(pca_comps)
     for i, pca_comp in enumerate(pca_comps):
-        if pca_comp[i] < 0:
-            pca_comps[i] = -pca_comp
-    # comp_z = unit_vector(np.cross(pca_comps[0], pca_comps[1]))
-    # if comp_z[-1] < 0:
-    #     comp_z = -comp_z
-    # pca_comps = np.vstack([pca_comps, comp_z])
-    return pca_comps
+        axis_idx = np.argmax(np.abs(pca_comp))
+        if pca_comp[axis_idx] < 0:
+            pca_comp = -pca_comp
+        new_pca_comps[i] = pca_comp
+    return new_pca_comps
 
 def proj_vec_to_plane(a, u, v):
     n = np.cross(u, v)
@@ -101,17 +112,42 @@ def seq_dists(points):
     dists = np.insert(dists, 0, 0)
     return dists
 
-def find_segments(points, dist_thr):
+def interp_segments(points, dist_thr, min_points=3):
     dists = seq_dists(points)
     split_indices = np.where(dists[1:] > dist_thr)[0] + 1
     segments = np.split(points, split_indices)
+    segments = [seg for seg in segments if seg.shape[0] > min_points]
+    return segments
+
+def filter_bnd_3d(bnd_3d, thr=0.01):
+    dists = seq_dists(bnd_3d)
+    jumps = np.where(dists[1:] > thr)[0]
+    if len(jumps) < 1:
+        return bnd_3d
+    init_jump_idx = jumps[0] + 1
+    return bnd_3d[:init_jump_idx]
+
+def align_cnt_3d(cnt):
+    start_idx = np.argmax(seq_dists(cnt))
+    ordered_points = np.concatenate((cnt[start_idx:], cnt[:start_idx]))
+    return ordered_points
+
+def find_segments(points, min_points=3):
+    scaler = StandardScaler()
+    points_scaled = scaler.fit_transform(points)
+    pca = PCA(n_components=3)
+    points_trans = pca.fit_transform(points_scaled)
+    hdbscan = HDBSCAN(min_cluster_size=min_points)
+    labels = hdbscan.fit_predict(points_trans)
+    unique_labels = np.unique(labels)
+    segments = [points[labels == label] for label in unique_labels]
     return segments
 
 def interp_2d(orig_points, num_interp_ratio=0.1, is_closed=True, dist_threshold=300):
     if is_closed:
         orig_points = np.append(orig_points, orig_points[0].reshape(1, 2), axis=0)    
     if dist_threshold is not None:
-        segments = find_segments(orig_points, dist_threshold)
+        segments = interp_segments(orig_points, dist_threshold)
     else:
         segments = [orig_points]
     interpolated_segments = []
@@ -144,8 +180,8 @@ def interp_3d(orig_points, num_interp_ratio=0.1, is_closed=True):
     if is_closed:
         orig_points = np.append(orig_points, orig_points[0].reshape(1,3), axis=0)
     dists = seq_dists(orig_points)
-    filt_orig_pts = orig_points[~np.isclose(dists, 0)]
-    n_orig = np.cumsum(dists[~np.isclose(dists, 0)])
+    filt_orig_pts = orig_points[dists < dists.mean()]
+    n_orig = np.cumsum(dists[dists < dists.mean()])
     n_orig = n_orig/n_orig[-1] # normalize the array so the values are between [0, 1]
     des_num_points = int(filt_orig_pts.shape[0]*(1 + num_interp_ratio))
     n_des  = np.linspace(0, 1, num = des_num_points)
@@ -164,7 +200,7 @@ def smooth_cnt(cnt, win_r):
         )
     return cnt_filt
 
-def rm_outlier_mad(points, thresh=3.5):
+def rm_outlier_mad(points, thresh=1.5):
     if points.ndim == 1:
         points = points.reshape(-1,1)
     elif points.size == 0 or points.ndim == 0:

@@ -34,7 +34,7 @@ def pch_g_pcmjaw(kpt_nms, kpts_3d, g_psmtip, g_psmjaw, g_psmtip_psmjaw):
         g_psmjaw[:3,3] = kpts_3d[kpt_nms.index("TipHook")]
         g_offset = tf_utils.ginv(g_psmtip).dot(g_psmjaw)
         t_dist = np.linalg.norm(g_offset[:3,3] - g_psmtip_psmjaw[:3,3])
-        if t_dist > 0.003:
+        if t_dist > 0.01:
             g_psmjaw = g_psmtip.dot(g_psmtip_psmjaw)
         else:
             g_psmjaw = g_psmtip.dot(g_offset)

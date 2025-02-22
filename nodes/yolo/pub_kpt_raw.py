@@ -10,7 +10,7 @@ import message_filters
 from sitl_ros2_interfaces.msg import Dt2KptState
 from utils import yolo_utils, ros2_utils, kpt_utils
 
-class PUB_KPT_RAW_YOLO(Node):
+class PUB_KPT_RAW(Node):
     def __init__(self, params):
         super().__init__(params["node_name"])
         self.br = CvBridge()

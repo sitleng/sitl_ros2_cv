@@ -9,8 +9,8 @@ def main(args=None):
 
     params = {
         "node_name"     : "pub_ecm_pcl",
-        "queue_size"    : 1,
-        "slop"          : 0.02,
+        "queue_size"    : 5,
+        "slop"          : 0.03,
         "ref_cam_topic" : "/ecm/left/rect/image_color",
     }
 

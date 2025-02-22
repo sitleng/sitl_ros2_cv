@@ -2,7 +2,7 @@ import rclpy
 
 import os
 
-from nodes.detect import pub_kpt_cp_node
+from nodes.detect import pub_kpt_cp
 
 def main(args=None):
     rclpy.init(args=args)
@@ -15,12 +15,12 @@ def main(args=None):
         "ct_kpt_nm"          : "CentralScrew",
         "tf_path"            : "/home/"+os.getlogin()+"/aruco_data/base_tfs.yaml",
         "frame_id"           : "ecm_left",
-        "tip_child_frame_id" : "psm1_tip_yolo",
-        "jaw_child_frame_id" : "psm1_jaw_yolo",
+        "tip_child_frame_id" : "psm1_tip_pch",
+        "jaw_child_frame_id" : "psm1_jaw_pch",
         "psm_topic"          : "/PSM1/custom/setpoint_cp",
     }
 
-    app = pub_kpt_cp_node.PUB_KPT_CP(params)
+    app = pub_kpt_cp.PUB_KPT_CP(params)
     rclpy.spin(app)
     app.destroy_node()
     rclpy.shutdown()

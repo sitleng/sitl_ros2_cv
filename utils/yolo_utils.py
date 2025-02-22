@@ -46,11 +46,17 @@ def get_segs_2d(img, seg_model, conf_thr=0.25, iou_thr=0.7):
     seg_nms = result.names
     seg_labels = [seg_nms[seg_cl] for seg_cl in seg_cls]
     seg_scores = list(result.boxes.conf.cpu().numpy())
-    seg_cnts = result.masks.xy
-    return seg_scores, seg_labels, seg_cnts
+    if result.masks is None:
+        return None, None, None
+    seg_masks = result.masks.data.cpu().numpy()
+    return seg_scores, seg_labels, seg_masks
     
 def get_kpts_2d(img, kpt_model):
-    result = kpt_model(img, verbose=False)[0]
+    result = kpt_model.predict(
+        img,
+        verbose=False,
+        conf=1e-6,
+    )[0]
     if len(result) == 0:
         return None
     inst_kpts_2d = []
@@ -59,9 +65,10 @@ def get_kpts_2d(img, kpt_model):
         inst_kpts_2d.append([x, y])
     return np.array(inst_kpts_2d, dtype=np.uint16)
 
-def process_gallb_cnt(gallb_cnts, img_shape, cnt_area_thr):
-    gallb_mask = seg_utils.get_cnt_mask(gallb_cnts, img_shape)
-    gallb_mask = cv_utils.open_mask(gallb_mask, cv2.MORPH_ELLIPSE, 9, 5)
-    # gallb_mask = cv_utils.close_mask(gallb_mask, cv2.MORPH_ELLIPSE, 9, 5)
-    gallb_cnts = seg_utils.get_obj_seg(gallb_mask, cnt_area_thr)
-    return gallb_cnts
+def process_masks(masks, cnt_area_thr):
+    cnts = []
+    for mask in masks:
+        mask = cv_utils.open_mask(mask, cv2.MORPH_ELLIPSE, 9, 5)
+        # mask = cv_utils.close_mask(mask, cv2.MORPH_ELLIPSE, 9, 5)
+        cnts.append(seg_utils.get_obj_seg(mask, cnt_area_thr))
+    return cnts

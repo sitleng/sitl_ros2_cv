@@ -26,8 +26,6 @@ class PUB_CAM_PCL(Node):
     def callback(self, cam1_rect_color_msg, pclimg_msg):
         cam1_rect_color = self.br.compressed_imgmsg_to_cv2(cam1_rect_color_msg)
         pclimg = self.br.imgmsg_to_cv2(pclimg_msg)
-        # pclimg = self.br.compressed_imgmsg_to_cv2(pclimg_msg)
-        self.get_logger().info(f'{pclimg.dtype}', once=True)
         pcl_msg = pcl_utils.pclimg2pcl2(
             cam1_rect_color,
             pclimg,
