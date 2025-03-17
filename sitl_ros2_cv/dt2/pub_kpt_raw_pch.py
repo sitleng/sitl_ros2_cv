@@ -18,7 +18,7 @@ def main(args=None):
         "inst_name"       : "PCH",
         "ct_kpt_nm"       : "CentralScrew",
         "model_path"      : "/home/"+os.getlogin()+"/dt2_dataset/kpts/pch_results_t5/model_final.pth",
-        "model_score_thr" : 0.8,
+        "model_score_thr" : 0.1,
         "window_size"     : 25,
         "mad_thr"         : 1.5,
         "kpt_score_thr"   : 0.1,

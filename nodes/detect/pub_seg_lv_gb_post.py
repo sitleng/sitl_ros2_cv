@@ -5,7 +5,7 @@ import message_filters
 
 # Import custom libraries
 from utils import pcl_utils, ros2_utils
-from utils import seg_utils
+from utils import seg_utils, misc_utils
 
 class PUB_SEG_LV_GB_POST(Node):
     def __init__(self, params):
@@ -38,7 +38,7 @@ class PUB_SEG_LV_GB_POST(Node):
         gb_skel_3d = pcl_utils.pcl2nparray(skel_msg)
 
         adj_3d = seg_utils.adj_cnts_3d(lv_cnt_3d, gb_cnt_3d, self.adj_dub)
-        adj_3d = seg_utils.rm_cnt_outliers_pca(adj_3d)
+        # ros2_utils.loginfo(self, f'Hellooooo')
         if adj_3d.shape[0] < 5:
             return
         self.pub_lv_gb_adj.publish(
@@ -51,7 +51,10 @@ class PUB_SEG_LV_GB_POST(Node):
         )
 
         bnd_3d = seg_utils.get_bnd(gb_skel_3d, adj_3d)
-        # bnd_3d = seg_utils.rm_cnt_outliers_pca(bnd_3d)
+        # bnd_3d = misc_utils.smooth_cnt(bnd_3d, 0.2)
+        # bnd_3d = misc_utils.filter_bnd_3d(bnd_3d)
+        # bnd_3d = misc_utils.filt_bnd_pts(bnd_3d)
+        # bnd_3d = misc_utils.interp_3d(bnd_3d, is_closed=False)
         # ros2_utils.loginfo(self, f'bnd_3d shape: {bnd_3d.shape}')
         if bnd_3d is None or bnd_3d.shape[0] < 5:
             return

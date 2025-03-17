@@ -11,9 +11,9 @@ def main(args=None):
         "queue_size"            : 5,
         # "refimg_topic"         : "/video/left/rect/image_color",
         "refimg_topic"          : "/ecm/left/rect/image_color",
-        # "model_path"            : "/home/"+os.getlogin()+"/yolo/liver_seg/v11m_crcd_temp.pt",
         "model_path"            : "/home/"+os.getlogin()+"/yolo/liver_seg/v11l_crcd_temp2.pt",
-        "conf_thr"              : 1e-5,
+        # "model_path"            : "/home/"+os.getlogin()+"/yolo/liver_seg/v11l_crcd_final.pt",
+        "conf_thr"              : 1e-3,
         "cnt_area_thr"          : 5000,
         "downsample_pixel_dist" : 20,
     }

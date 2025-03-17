@@ -8,7 +8,7 @@ def main(args=None):
     params = {
         "node_name"       : "pub_seg_lv_gb_post",
         "queue_size"      : 5,
-        "slop"            : 0.2,
+        "slop"            : 0.3,
         "adj_dub"         : 0.005, # dub for kdtree to find adjacent 3D points
         "adj_segs_thr"    : 0.005, # threshold to segment the adjacent trajectory
         "frame_id"        : 'ecm_left',

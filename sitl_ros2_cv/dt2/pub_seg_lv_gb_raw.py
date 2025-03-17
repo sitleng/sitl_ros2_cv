@@ -13,13 +13,15 @@ def main(args=None):
         "refimg_topic"           : "/ecm/left/rect/image_color",
 
         # "model_type"             : "MaskDINO",
-        # "model_weights"          : "/home/"+os.getlogin()+"/MaskDINO/output_crcd/model_final.pth",
+        # # "model_weights"          : "/home/"+os.getlogin()+"/MaskDINO/output_crcd/model_final.pth",
+        # "model_weights"          : "/home/"+os.getlogin()+"/MaskDINO/output_crcd_temp/model_final.pth",
         # "config_file"            : "/home/"+os.getlogin()+"/MaskDINO/configs/coco/instance-segmentation/maskdino_R50_bs16_50ep_3s_custom.yaml",
 
         "model_type"             : "Detectron2",
-        "model_weights"          : "/home/"+os.getlogin()+"/dt2_dataset/liver/crcd_res/model_final.pth",
+        # "model_weights"          : "/home/"+os.getlogin()+"/dt2_dataset/liver/crcd_res/model_final_v2.pth",
+        "model_weights"          : "/home/"+os.getlogin()+"/dt2_dataset/liver/results_v5_re/model_final.pth", # BioRob 2024
 
-        "pred_score_thr"         : 0.7,
+        "pred_score_thr"         : 0.5,
         "cnt_area_thr"           : 10000,
         "downsample_pixel_dist"  : 20,
     }

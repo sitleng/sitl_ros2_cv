@@ -97,6 +97,11 @@ class PUB_SEG_LV_GB_RAW(Node):
             return
         if "liver" not in seg_labels or "gallbladder" not in seg_labels:
             return
+        if "liver bed" in seg_labels:
+            seg_masks[seg_labels.index('liver')] = cv_utils.merge_mask(
+                seg_masks[seg_labels.index('liver')],
+                seg_masks[seg_labels.index('liver bed')]
+            )
         # Some post processing of the detected masks
         seg_cnts = yolo_utils.process_masks(
             seg_masks,

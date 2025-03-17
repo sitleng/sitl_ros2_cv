@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-
 from rclpy.node import Node
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge
 
 import cv2
+print(cv2.__file__)
 
 from utils import ros2_utils
 
@@ -14,7 +13,7 @@ class IMAGE_VIEW(Node):
         super().__init__("image_view_"+self.cv_win_nm)
         self.br = CvBridge()
         self.img = None
-        self.qos = ros2_utils.custom_qos_profile(10)
+        self.qos = ros2_utils.custom_qos_profile(5)
         if params["img_type"] == "compressed":
             self.sub_img = self.create_subscription(
                 CompressedImage,
@@ -32,6 +31,7 @@ class IMAGE_VIEW(Node):
 
     def raw_callback(self, img_msg):
         self.img = self.br.imgmsg_to_cv2(img_msg)
+        ros2_utils.loginfo(self, f'{self.img.shape}')
         if self.img is not None:
             # self.get_logger().info(f"{self.img[240:243, 720]}")
             # cv2.imwrite("/home/sitl-dvrk-sub/recon3dtest.png", self.img)

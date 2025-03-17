@@ -44,6 +44,9 @@ def max_contour(contours):
         return None, None
     return max_cnt_idx, contours[max_cnt_idx].reshape(-1,2)
 
+def merge_mask(mask1, mask2):
+    return np.logical_or(mask1, mask2)
+
 def cnt_centroid(cnt):
     if cnt is None:
         return None
@@ -83,6 +86,18 @@ def mask_skeleton(mask):
     # new_skel[corners[:,1], corners[:,0]] = 0
     # skel_inds = np.stack(np.where(new_skel.T > 0), axis=1)
     return skel_inds
+
+# def mask_skeleton(mask):
+#     # skel = skeletonize(mask, method='lee')
+#     skel = skeletonize(mask)
+#     skel_inds = np.stack(np.where(skel.T > 0), axis=1)
+#     new_skel = np.zeros_like(skel, dtype=np.uint8)
+#     new_skel[skel_inds[:,1], skel_inds[:,0]] = 255
+#     corners = skeleton_corners_harris(new_skel, blockSize=25, ksize=3)
+#     new_skel[corners[:,1], corners[:,0]] = 0
+#     skel_inds = np.stack(np.where(new_skel.T > 0), axis=1)
+#     skel_inds = prune_skeleton(skel_inds, 45)
+#     return skel_inds
 
 def branch_len(branch):
     return cv2.arcLength(branch, False)

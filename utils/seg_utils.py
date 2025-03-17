@@ -61,8 +61,8 @@ def rm_cnt_outliers_pca(cnt):
     cov_inv = np.linalg.inv(np.cov(transformed_points.T))
     distances = np.array([mahalanobis(p, mean_pca, cov_inv) for p in transformed_points])
 
-    # Define an outlier threshold (e.g., 95th percentile)
-    threshold = np.percentile(distances, 90)
+    # Define an outlier threshold ()
+    threshold = np.percentile(distances, 70)
     new_cnt = cnt[distances <= threshold]
     return new_cnt
 
@@ -146,26 +146,23 @@ def gen_segstamped(seg_label, cnt_2d, stamp):
 def get_bnd(gb_skel_3d, adj_3d):
     # Fit a plane to adj_3d using PCA
     adj_pca_comps = misc_utils.cnt_axes_3d(adj_3d)
-    plane_normal = adj_pca_comps[2]
-    if plane_normal[2] < 0:
-        plane_normal = -plane_normal
 
-    # Fit a 3D line to gb_skel_3d
-    pca_line = PCA(n_components=1)
-    pca_line.fit(gb_skel_3d)
-    line_origin = pca_line.mean_
-    line_direction = pca_line.components_[0]
-    if line_direction[1] < 0:
-        line_direction = -line_direction
+    line_origin = gb_skel_3d.mean(axis=0)
 
     # Compute rightward direction
-    right_vector = np.cross(line_direction, plane_normal)
+    right_vector = adj_pca_comps[1]
     right_vector /= np.linalg.norm(right_vector)
     if right_vector[0] < 0:
         right_vector = -right_vector
 
     # Find right-side points
-    right_mask = np.dot(adj_3d - line_origin, right_vector) > 0
+    # right_mask = misc_utils.angle_btw_vecs(adj_3d - line_origin, right_vector) < np.radians(60)
+    thr = np.linalg.norm(adj_3d - line_origin, axis=1)*np.cos(np.radians(60))
+    right_mask = np.dot(adj_3d - line_origin, right_vector) > thr
+    # right_mask = np.dot(adj_3d - line_origin, right_vector) > 0
+    # right_mask = np.where(
+    #     np.linalg.norm(np.cross(adj_3d - line_origin, right_vector), axis=1) < 0.01
+    # )[0]
     right_adj_3d = adj_3d[right_mask]
 
     return right_adj_3d

@@ -11,6 +11,7 @@ from sklearn.neighbors import LocalOutlierFactor
 from scipy.interpolate import PchipInterpolator
 from scipy.spatial.distance import cdist
 from scipy.spatial import cKDTree
+from scipy.spatial.distance import mahalanobis
 
 def check_empty_path(path):
     if not os.path.exists(path):
@@ -61,8 +62,18 @@ def unit_vector(v):
 def unit_vecs(vecs):
     return vecs/np.linalg.norm(vecs, axis=1)[:, np.newaxis]
 
+# def angle_btw_vecs(v1, v2):
+#     return np.arctan2(np.linalg.norm(np.cross(v1, v2)), np.dot(v1, v2.T))
+
 def angle_btw_vecs(v1, v2):
-    return np.arctan2(np.linalg.norm(np.cross(v1, v2)), np.dot(v1, v2.T))
+    v1 = np.atleast_2d(v1)  # Ensure v1 is 2D
+    v2 = np.atleast_2d(v2)  # Ensure v2 is 2D
+    
+    cross_prod = np.cross(v1, v2)  # Row-wise cross product
+    dot_prod = np.einsum('ij,ij->i', v1, v2)  # Row-wise dot product
+    
+    angles = np.arctan2(np.linalg.norm(cross_prod, axis=1), dot_prod)
+    return angles
 
 def law_of_cos_ang(x1, x2, y):
     return np.arccos((x1**2 + x2**2 - y**2)/(2*x1*x2))
@@ -119,14 +130,6 @@ def interp_segments(points, dist_thr, min_points=3):
     segments = [seg for seg in segments if seg.shape[0] > min_points]
     return segments
 
-def filter_bnd_3d(bnd_3d, thr=0.01):
-    dists = seq_dists(bnd_3d)
-    jumps = np.where(dists[1:] > thr)[0]
-    if len(jumps) < 1:
-        return bnd_3d
-    init_jump_idx = jumps[0] + 1
-    return bnd_3d[:init_jump_idx]
-
 def align_cnt_3d(cnt):
     start_idx = np.argmax(seq_dists(cnt))
     ordered_points = np.concatenate((cnt[start_idx:], cnt[:start_idx]))
@@ -180,8 +183,8 @@ def interp_3d(orig_points, num_interp_ratio=0.1, is_closed=True):
     if is_closed:
         orig_points = np.append(orig_points, orig_points[0].reshape(1,3), axis=0)
     dists = seq_dists(orig_points)
-    filt_orig_pts = orig_points[dists < dists.mean()]
-    n_orig = np.cumsum(dists[dists < dists.mean()])
+    filt_orig_pts = orig_points[~np.isclose(dists, 0)]
+    n_orig = np.cumsum(dists[~np.isclose(dists, 0)])
     n_orig = n_orig/n_orig[-1] # normalize the array so the values are between [0, 1]
     des_num_points = int(filt_orig_pts.shape[0]*(1 + num_interp_ratio))
     n_des  = np.linspace(0, 1, num = des_num_points)
@@ -194,11 +197,48 @@ def interp_3d(orig_points, num_interp_ratio=0.1, is_closed=True):
 def smooth_cnt(cnt, win_r):
     cnt_filt = np.copy(cnt)
     win_len = max([5, int(cnt.shape[0]*win_r)])
-    for i in range(cnt.shape[1]):
-        cnt_filt[:,i] = savgol_filter(
-            cnt[:,i], window_length=win_len, polyorder=2, axis=0
-        )
-    return cnt_filt
+    try:
+        for i in range(cnt.shape[1]):
+            cnt_filt[:,i] = savgol_filter(
+                cnt[:,i], window_length=win_len, polyorder=2, axis=0
+            )
+        return cnt_filt
+    except:
+        return cnt
+
+def filter_mahalanobis(points, threshold=1.88, reg_epsilon=1e-6):
+    mean = np.mean(points, axis=0)
+    cov = np.cov(points, rowvar=False)
+    try:
+        cov_reg = cov + reg_epsilon * np.eye(cov.shape[0])
+        inv_cov = np.linalg.inv(cov_reg)
+        distances = np.array([mahalanobis(p, mean, inv_cov) for p in points])
+        return points[distances < threshold]
+    except:
+        return points
+    
+def filter_bnd_3d(bnd_3d, thr=0.005):
+    try:
+        bnd_3d_center = bnd_3d.mean(axis=0)
+        bnd_axis = cnt_axes_3d(bnd_3d)[0]
+        cross = np.cross(bnd_3d - bnd_3d_center, bnd_axis)
+        dists = np.linalg.norm(cross, axis=1) / np.linalg.norm(bnd_axis)
+        return bnd_3d[dists < thr]
+    except:
+        return bnd_3d
+    
+def filt_bnd_pts(curve_points):
+    pca = PCA(n_components=3)
+    pca.fit(curve_points)
+
+    main_axis = pca.components_[0]  # First principal component
+
+    projected_points = np.dot(curve_points - np.mean(curve_points, axis=0), main_axis)
+
+    threshold = np.percentile(np.abs(projected_points), 85)
+    selected_points = curve_points[np.abs(projected_points) <= threshold]
+
+    return selected_points
 
 def rm_outlier_mad(points, thresh=1.5):
     if points.ndim == 1:

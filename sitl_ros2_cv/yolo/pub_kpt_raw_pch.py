@@ -17,8 +17,8 @@ def main(args=None):
         "pclimg_topic"    : "/ecm/recon3d/pclimg",
         "inst_name"       : "PCH",
         "ct_kpt_nm"       : "CentralScrew",
-        "model_path"      : "/home/"+os.getlogin()+"/yolo/model_pch/best.pt",
-        "window_size"     : 25,
+        "model_path"      : "/home/"+os.getlogin()+"/yolo/model_pch/pch.pt",
+        "window_size"     : 15,
         "mad_thr"         : 1.5,
     }
 

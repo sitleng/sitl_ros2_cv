@@ -17,8 +17,8 @@ def main(args=None):
         "pclimg_topic"    : "/ecm/recon3d/pclimg",
         "inst_name"       : "FBF",
         "ct_kpt_nm"       : "Center",
-        "model_path"      : "/home/"+os.getlogin()+"/yolo/model_fbf/best.pt",
-        "window_size"     : 25,
+        "model_path"      : "/home/"+os.getlogin()+"/yolo/model_fbf/fbf.pt",
+        "window_size"     : 15,
         "mad_thr"         : 1.5,
     }
 

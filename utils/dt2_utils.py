@@ -19,11 +19,18 @@ from detectron2.data.catalog import Metadata
 
 from detectron2.utils.visualizer import Visualizer, _create_text_labels, GenericMask
 
+# def load_seg_metadata():
+#     seg_metadata = Metadata()
+#     seg_metadata.set(thing_classes = ['Liver','Gallbladder', 'LiverBed'])
+#     seg_metadata.set(evaluator_type = 'coco')
+#     seg_metadata.set(thing_colors=[(255, 255, 0), (255, 0, 255), (0, 255, 255)])
+#     return seg_metadata
+
 def load_seg_metadata():
     seg_metadata = Metadata()
-    seg_metadata.set(thing_classes = ['Liver','Gallbladder', 'LiverBed'])
+    seg_metadata.set(thing_classes = ['Meat','Skin','Liver','Gallbladder','FBF','PCH'])
     seg_metadata.set(evaluator_type = 'coco')
-    seg_metadata.set(thing_colors=[(255, 255, 0), (255, 0, 255), (0, 255, 255)])
+    seg_metadata.set(thing_colors=[(255, 0, 0), (0, 255, 0), (0, 0, 255), (100, 50, 0), (10, 150, 75), (48, 92, 38)])
     return seg_metadata
 
 def load_kpt_metadata(inst_nm):
@@ -153,10 +160,12 @@ def draw_and_connect_keypoints_cv(img, metadata, keypoints, bbox, box_c, prob_th
 
 def load_seg_predictor(model_path, score_thr):
     cfg = get_cfg()
-    cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"))
+    # cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"))
+    # cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3
+    cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 6
     cfg.DATALOADER.NUM_WORKERS = 1
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3
     cfg.MODEL.WEIGHTS = model_path
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = score_thr
     return DefaultPredictor(cfg)
