@@ -214,46 +214,6 @@ nms_threshold: 0.4
 - **Dataset Generation**: Creating annotated surgical datasets
 - **Performance Analysis**: Evaluating detection and segmentation accuracy
 
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes and add tests
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
-
-### Development Guidelines
-- Follow PEP 8 for Python code style
-- Add docstrings to all functions and classes
-- Include unit tests for new functionality
-- Update documentation for new features
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**CUDA not found:**
-```bash
-# Verify CUDA installation
-nvidia-smi
-python -c "import torch; print(torch.cuda.is_available())"
-```
-
-**Camera calibration errors:**
-- Ensure calibration files are in the correct directory structure
-- Check file permissions and YAML format validity
-
-**Model loading failures:**
-- Verify model file paths in launch configurations
-- Check PyTorch and Detectron2 compatibility versions
-
-## 📚 Documentation
-
-For detailed API documentation and tutorials, visit our [documentation site](https://your-docs-url.com) or check the inline docstrings in the source code.
-
 ## 🏥 About SITL
 
 **Surgical Innovation and Training Lab**  
