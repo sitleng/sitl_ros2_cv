@@ -3,7 +3,6 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge
 
 import cv2
-print(cv2.__file__)
 
 from utils import ros2_utils
 

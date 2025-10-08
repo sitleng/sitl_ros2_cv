@@ -6,7 +6,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     params = {
-        "topic_name": "/espcam/image_color",
+        "topic_name": "/espcam/raw/image_color",
         "img_type"  : "compressed",
         # "topic_name": "/ecm/right/rect/image_color",
         # "img_type"  : "compressed",

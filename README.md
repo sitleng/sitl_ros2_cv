@@ -1,55 +1,56 @@
 # SITL ROS2 CV - Computer Vision for da Vinci Surgical Robotics
-A comprehensive ROS2 package for computer vision applications on da Vinci stereo endoscopic cameras, developed by the Surgical Innovation and Training Lab at UIC.
 
-## 🎯 Overview
+A ROS2 package for real-time computer vision on da Vinci stereo endoscopic cameras, developed by the Surgical Innovation and Training Lab at the University of Illinois Chicago.
 
-This package provides real-time computer vision capabilities for surgical robotics applications, specifically designed for da Vinci surgical systems. It includes stereo vision, object detection, segmentation, keypoint detection, and 3D reconstruction capabilities.
+## Overview
 
-## 🚀 Key Features
+This package provides computer vision capabilities for surgical robotics applications, specifically designed for da Vinci surgical systems. It includes stereo vision processing, anatomical structure segmentation, surgical instrument detection, and 3D reconstruction.
 
-### 🔍 Vision Capabilities
-- **Stereo Vision Processing**: Real-time stereo reconstruction and disparity mapping
-- **Object Detection & Segmentation**: Liver, gallbladder, and surgical instrument detection
-- **Keypoint Detection**: Surgical instrument pose estimation (Prograsp Forceps, Patch Grasper)
-- **3D Point Cloud Processing**: Real-time 3D reconstruction from stereo cameras
+## Features
 
-### 🤖 AI Models Support
-- **YOLO**: Object detection and segmentation with custom surgical models
-- **Detectron2**: Advanced segmentation models for anatomical structures
-- **MaskDINO**: Instance segmentation capabilities
+### Vision Capabilities
+- Stereo vision processing with real-time disparity mapping
+- Anatomical structure segmentation (liver, gallbladder)
+- Surgical instrument keypoint detection (Fenestrated Bipolar Forceps, Permanent Cautery Hook)
+- 3D point cloud generation from stereo cameras
 
-### 📹 Camera Systems
-- **ECM (Endoscopic Camera Manipulator)**: Full stereo pipeline for da Vinci cameras
-- **Video Playback**: Recorded stereo video processing and analysis
-- **Real-time Streaming**: Live camera feeds with calibration and rectification
+### Supported AI Models
+- YOLO (YOLOv11) for object detection and segmentation
+- Detectron2 for instance segmentation
+- MaskDINO for advanced segmentation tasks
 
-## 📦 Installation
+### Camera Systems
+- ECM (Endoscopic Camera Manipulator) stereo pipeline
+- Recorded stereo video processing
+- Live camera streaming with calibration and rectification
+
+## Installation
 
 ### Prerequisites
 ```bash
-# ROS2 Humble installation
+# ROS2 Humble
 sudo apt install ros-humble-desktop ros-humble-cv-bridge ros-humble-image-transport
 
 # Python dependencies
 pip install opencv-python scipy scikit-learn numpy torch torchvision
-pip install ultralytics  # for YOLO models
+pip install ultralytics
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu118/torch2.0/index.html
 ```
 
-### Install Package
+### Build Package
 ```bash
 cd ~/ros2_ws/src
-git clone https://github.com/your-username/sitl_ros2_cv.git
+git clone https://github.com/sitleng/sitl_ros2_cv.git
 cd ~/ros2_ws
 colcon build --packages-select sitl_ros2_cv
 source install/setup.bash
 ```
 
-## 🎮 Usage
+## Usage
 
-### Launch Stereo ECM System
+### Stereo ECM System
 ```bash
-# Complete stereo camera system with basic processing
+# Basic stereo camera processing
 ros2 launch sitl_ros2_cv stereo_ecm_base.xml
 
 # Stereo system with 3D point cloud generation
@@ -58,19 +59,17 @@ ros2 launch sitl_ros2_cv stereo_ecm_pcl.xml
 
 ### Anatomical Structure Segmentation
 ```bash
-# Liver-Gallbladder segmentation using YOLO
+# Liver-gallbladder segmentation using YOLO
 ros2 launch sitl_ros2_cv yolo_seg_lv_gb.xml
 
-# Liver-Gallbladder segmentation using Detectron2
+# Liver-gallbladder segmentation using Detectron2
 ros2 launch sitl_ros2_cv dt2_seg_lv_gb.xml
 ```
 
-### Surgical Instrument Detection
+### Surgical Instrument Keypoint Detection
 ```bash
-# Prograsp Forceps keypoint detection (YOLO)
+# Prograsp Forceps keypoint detection
 ros2 launch sitl_ros2_cv yolo_kpt_fbf.xml
-
-# Prograsp Forceps keypoint detection (Detectron2)
 ros2 launch sitl_ros2_cv dt2_kpt_fbf.xml
 
 # Patch Grasper keypoint detection
@@ -93,30 +92,28 @@ ros2 launch sitl_ros2_cv stereo_video_pcl.xml
 ros2 launch sitl_ros2_cv dvrk_record.xml
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### Core Modules
 
-#### 🎥 Camera Management
-- **`nodes/camera/`**: Camera interfacing, calibration, and image processing
-  - Raw image publishing, rectification, disparity calculation
-  - 3D reconstruction and point cloud generation
-- **`sitl_ros2_cv/ecm/`**: ECM-specific implementations for da Vinci cameras
-- **`sitl_ros2_cv/video/`**: Video file processing and playback nodes
+#### Camera Management
+- `sitl_ros2_cv/ecm/`: ECM-specific implementations for da Vinci cameras
+- `sitl_ros2_cv/video/`: Video file processing and playback nodes
+- `nodes/camera/`: Camera interfacing, calibration, rectification, disparity calculation, and 3D reconstruction
 
-#### 🔍 Detection & Segmentation
-- **`nodes/detect/`**: High-level detection pipelines with post-processing
-- **`nodes/dt2/`** & **`sitl_ros2_cv/dt2/`**: Detectron2-based segmentation
-- **`nodes/yolo/`** & **`sitl_ros2_cv/yolo/`**: YOLO-based detection and segmentation
+#### Detection and Segmentation
+- `sitl_ros2_cv/detect/`: High-level detection pipelines with post-processing
+- `sitl_ros2_cv/dt2/` and `nodes/dt2/`: Detectron2-based segmentation
+- `sitl_ros2_cv/yolo/` and `nodes/yolo/`: YOLO-based detection and segmentation
 
-#### 🛠️ Utility Libraries
-- **`utils/pcl_utils.py`**: Point cloud processing and CUDA acceleration
-- **`utils/cv_cuda_utils.py`**: CUDA-accelerated computer vision operations
-- **`utils/seg_utils.py`**: Segmentation post-processing and contour analysis
-- **`utils/kpt_utils.py`**: Keypoint detection and tracking utilities
-- **`utils/tf_utils.py`**: 3D transformations and coordinate conversions
-- **`utils/ecm_utils.py`**: ECM camera-specific utilities
-- **`utils/misc_utils.py`**: General purpose utilities
+#### Utilities
+- `utils/pcl_utils.py`: Point cloud processing and CUDA acceleration
+- `utils/cv_cuda_utils.py`: CUDA-accelerated computer vision operations
+- `utils/seg_utils.py`: Segmentation post-processing and contour analysis
+- `utils/kpt_utils.py`: Keypoint detection and tracking
+- `utils/tf_utils.py`: 3D transformations and coordinate conversions
+- `utils/ecm_utils.py`: ECM camera-specific utilities
+- `utils/misc_utils.py`: General utilities
 
 ### Key Algorithms
 
@@ -129,7 +126,7 @@ disp = cv_cuda_utils.cuda_sgm_wls_filter(cam1_sgm, cam2_sgm, left_img, right_img
 pclimg = pcl_utils.disp2pclimg_cuda(disp, Q, depth_scale, pcl_scale, depth_trunc)
 ```
 
-#### Segmentation Post-processing
+#### Segmentation Post-Processing
 ```python
 # Outlier removal and contour smoothing
 clean_cnt = seg_utils.rm_cnt_outliers_pca(cnt, pca_var_ratio=0.95)
@@ -139,30 +136,30 @@ smooth_cnt = misc_utils.smooth_cnt(clean_cnt, win_r=0.1)
 cnt_3d = seg_utils.cnt_2d_to_3d(smooth_cnt, pclimg)
 ```
 
-## 📊 Supported Data Types
+## ROS2 Messages and Data Formats
 
 ### ROS2 Messages
-- **`sensor_msgs/Image`**: Raw and processed camera images
-- **`sensor_msgs/CompressedImage`**: Compressed video streams
-- **`sensor_msgs/PointCloud2`**: 3D point clouds from stereo reconstruction
-- **`geometry_msgs/PointStamped`**: 3D keypoint locations
-- **`sitl_ros2_interfaces/SegStamped`**: Segmentation masks with timestamps
-- **`sitl_ros2_interfaces/Dt2KptState`**: Keypoint detection results
+- `sensor_msgs/Image`: Raw and processed camera images
+- `sensor_msgs/CompressedImage`: Compressed video streams
+- `sensor_msgs/PointCloud2`: 3D point clouds from stereo reconstruction
+- `geometry_msgs/PointStamped`: 3D keypoint locations
+- `sitl_ros2_interfaces/SegStamped`: Segmentation masks with timestamps
+- `sitl_ros2_interfaces/Dt2KptState`: Keypoint detection results
 
 ### Supported Formats
-- **Images**: PNG, JPG, BMP (via OpenCV)
-- **Videos**: MP4, AVI for recorded stereo pairs
-- **Point Clouds**: PCL-compatible formats
-- **Models**: PyTorch (.pt), Detectron2 (.pth)
+- Images: PNG, JPG, BMP
+- Videos: MP4, AVI for stereo pairs
+- Point clouds: PCL-compatible formats
+- Models: PyTorch (.pt), Detectron2 (.pth)
 
-## 🔧 Configuration
+## Configuration
 
 ### Camera Calibration
-Place stereo calibration files in your home directory:
+Place stereo calibration files in the home directory:
 ```
 ~/ecm_si_calib_data/
 ├── left_camera_matrix.yaml
-├── right_camera_matrix.yaml  
+├── right_camera_matrix.yaml
 ├── stereo_params.yaml
 └── rectification_maps/
     ├── left_rectification_map.yaml
@@ -170,18 +167,18 @@ Place stereo calibration files in your home directory:
 ```
 
 ### Model Configuration
-Update model paths in launch files according to your setup:
+Update model paths in launch files:
 ```python
 # YOLO models
 "model_path": "/home/"+os.getlogin()+"/yolo_models/liver_gb_best.pt"
 "fbf_model_path": "/home/"+os.getlogin()+"/yolo_models/fbf_keypoints_best.pt"
 
-# Detectron2 models  
+# Detectron2 models
 "model_weights": "/home/"+os.getlogin()+"/dt2_models/liver_model_final.pth"
 "model_config": "/home/"+os.getlogin()+"/dt2_models/liver_config.yaml"
 ```
 
-### Performance Tuning
+### Performance Parameters
 Adjust parameters in configuration files:
 ```yaml
 # Point cloud parameters
@@ -194,41 +191,33 @@ detection_confidence: 0.5
 nms_threshold: 0.4
 ```
 
-## 📈 Performance Metrics
-
-- **Stereo Processing**: ~30 FPS at 1280x720 resolution
-- **YOLO Inference**: ~25 FPS on RTX 3080, ~15 FPS on RTX 2060
-- **Detectron2 Inference**: ~20 FPS on RTX 3080, ~10 FPS on RTX 2060
-- **3D Reconstruction**: Real-time with CUDA acceleration
-- **Memory Usage**: 2-4 GB GPU memory for full pipeline
-
-## 🔍 Applications
+## Applications
 
 ### Surgical Automation
-- **Tissue Boundary Detection**: Automated identification of organ boundaries
-- **Instrument Tracking**: Real-time surgical tool pose estimation
-- **Depth Perception**: 3D spatial awareness for robotic manipulation
+- Tissue boundary detection for automated organ identification
+- Instrument tracking for real-time surgical tool pose estimation
+- Depth perception for 3D spatial awareness in robotic manipulation
 
-### Research & Development
-- **Algorithm Validation**: Benchmarking computer vision algorithms
-- **Dataset Generation**: Creating annotated surgical datasets
-- **Performance Analysis**: Evaluating detection and segmentation accuracy
+### Research and Development
+- Algorithm validation and benchmarking
+- Annotated surgical dataset generation
+- Performance analysis of detection and segmentation methods
 
-## 🏥 About SITL
+## About
 
 **Surgical Innovation and Training Lab**  
-University of Illinois at Chicago  
+University of Illinois Chicago  
 Department of Surgery
 
-We focus on advancing surgical robotics through innovative computer vision and machine learning techniques. Our research aims to improve surgical outcomes through enhanced automation and precision.
+Research focused on advancing surgical robotics through computer vision and machine learning techniques.
 
-## 📄 License
+## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
 
 ## Citation
 
-Please cite our paper if you use this code in your research:
+If you use this code in your research, please cite:
 
 ```bibtex
 @INPROCEEDINGS{koh2024autodissect,
@@ -242,6 +231,6 @@ Please cite our paper if you use this code in your research:
 }
 ```
 
----
+## Disclaimer
 
-**⚠️ Medical Device Notice**: This software is for research purposes only and is not intended for clinical use without proper validation and regulatory approval.
+This software is for research purposes only and is not intended for clinical use without proper validation and regulatory approval.
